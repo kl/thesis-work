@@ -37,8 +37,8 @@ public class DataPoster {
     private Runnable getPostRunnable(final Map<String, String> postData) {
 
        return new Runnable() {
+           
            @Override public void run() {
-
                try {
                    HttpPost httppost = new HttpPost(serverPostURI());
                    httppost.setEntity(getPostFormEntity(postData));
@@ -54,7 +54,6 @@ public class DataPoster {
                for (Map.Entry<String, String> entry : postData.entrySet()) {
                    nameValuePairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
                }
-
                return new UrlEncodedFormEntity(nameValuePairs);
            }
        };

@@ -24,14 +24,11 @@ public class PluginControllerCollection {
     public static class PluginControllerNotFoundException extends Exception {
 
         private String type;
+        public String getType() { return type; }
 
         public PluginControllerNotFoundException(String type) {
             super("Could not find PluginController for type: " + type);
             this.type = type;
-        }
-
-        public String getType() {
-            return type;
         }
     }
 }
