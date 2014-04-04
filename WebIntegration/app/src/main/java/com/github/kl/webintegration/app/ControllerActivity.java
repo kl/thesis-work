@@ -21,7 +21,7 @@ public class ControllerActivity extends Activity implements PluginResultHandler 
     @Inject DataPoster poster;
     @Inject PluginControllerCollection controllers;
 
-    private PluginController selectePluginController;
+    private PluginController selectedPluginController;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
