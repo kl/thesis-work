@@ -2,8 +2,12 @@ package com.github.kl.webintegration.app;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Resources;
 
 import com.github.kl.webintegration.app.controllers.FilePickerPluginController;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import javax.inject.Singleton;
 
@@ -12,7 +16,6 @@ import dagger.Provides;
 
 @Module(
         injects = ControllerActivity.class,
-        complete = false,
         library = true
 )
 public class AppModule {
@@ -23,24 +26,25 @@ public class AppModule {
         this.application = application;
     }
 
-    @Provides @Singleton
-    ContentResolver provideContentResolver() {
-        return application.getContentResolver();
-    }
-
-    @Provides PluginControllerCollection providePluginControllerCollection() {
-
-        return new PluginControllerCollection(
-                new FilePickerPluginController()
-        );
-    }
-
     /**
      * Allow the application context to be injected but require that it be annotated with
      * {@link ForApplication @Annotation} to explicitly differentiate it from an activity context.
      */
     @Provides @Singleton @ForApplication
-    Context provideApplicationContext() {
-        return application;
+    Context provideApplicationContext() { return application; }
+
+    @Provides PluginControllerCollection providePluginControllerCollection() {
+        return new PluginControllerCollection(
+                new FilePickerPluginController()
+        );
     }
+
+    @Provides @Singleton
+    ContentResolver provideContentResolver() { return application.getContentResolver(); }
+
+    @Provides @Singleton
+    Resources provideResources() { return application.getResources(); }
+
+    @Provides
+    HttpClient provideHttpClient() { return new DefaultHttpClient(); }
 }
