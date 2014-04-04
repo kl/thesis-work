@@ -26,7 +26,7 @@ public class ControllerActivity extends Activity implements PluginResultHandler 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((WebIntegrationApplication)getApplication()).inject(this);
+        bootstrapInjection();
 
         try {
             selectedPluginController = findControllerForIntent(getIntent());
@@ -38,6 +38,10 @@ public class ControllerActivity extends Activity implements PluginResultHandler 
             poster.post(getPluginNotFoundData());
             finish();
         }
+    }
+
+    private void bootstrapInjection() {
+        ((WebIntegrationApplication)getApplication()).inject(this);
     }
 
     private PluginController findControllerForIntent(Intent intent) throws PluginControllerNotFoundException {
