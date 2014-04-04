@@ -1,0 +1,8 @@
+<resources>
+    <string name="INTENT_SCHEME">salestab.android</string>
+    <string name="SERVER_IP">192.168.0.213</string>
+    <integer name="SERVER_PORT">9001</integer>
+    <string name="SERVER_POST">android</string>
+</resources>
+
+
