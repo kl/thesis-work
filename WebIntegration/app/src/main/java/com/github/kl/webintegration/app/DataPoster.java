@@ -37,7 +37,7 @@ public class DataPoster {
     private Runnable getPostRunnable(final Map<String, String> postData) {
 
        return new Runnable() {
-           
+
            @Override public void run() {
                try {
                    HttpPost httppost = new HttpPost(serverPostURI());

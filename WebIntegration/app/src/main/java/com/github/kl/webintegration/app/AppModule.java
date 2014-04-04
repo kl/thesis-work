@@ -33,10 +33,11 @@ public class AppModule {
     @Provides @Singleton @ForApplication
     Context provideApplicationContext() { return application; }
 
-    @Provides PluginControllerCollection providePluginControllerCollection() {
-        return new PluginControllerCollection(
-                new FilePickerPluginController()
-        );
+    @Provides PluginControllerCollection providePluginControllerCollection(
+            FilePickerPluginController c1
+    )
+    {
+        return new PluginControllerCollection(c1);
     }
 
     @Provides @Singleton

@@ -8,9 +8,13 @@ import com.github.kl.webintegration.app.PluginResultHandler;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 public class FilePickerPluginController implements PluginController {
 
     private static final int REQUEST_CODE = 1;
+
+    @Inject FilePickerPluginController() {}
 
     @Override
     public String getType() {
