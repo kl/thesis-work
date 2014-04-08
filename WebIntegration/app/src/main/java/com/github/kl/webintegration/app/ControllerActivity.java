@@ -35,7 +35,7 @@ public class ControllerActivity extends Activity implements PluginResultHandler 
 
         } catch (PluginControllerNotFoundException e) {
             Log.e(LOG_TAG, "Unknown plugin controller for type: " + e.getType());
-            poster.post(getPluginNotFoundData());
+            postPluginNotFound();
             finish();
         }
     }
@@ -56,14 +56,28 @@ public class ControllerActivity extends Activity implements PluginResultHandler 
     }
 
     @Override
-    public void onPluginResult(Map<String, String> result) {
+    public void onPluginResult(Map<String, String> result, PluginController controller) {
         poster.post(result);
+        finish();
     }
 
-    private Map<String, String> getPluginNotFoundData() {
+    @Override
+    public void onPluginCancel(PluginController controller) {
+        postCancel(controller.getType());
+        finish();
+    }
+
+    private void postCancel(String type) {
+        Map<String, String> data = new HashMap<>();
+        data.put("data", "PLUGIN_USER_CANCEL");
+        data.put("type", type);
+        poster.post(data);
+    }
+
+    private void postPluginNotFound() {
         Map<String, String> data = new HashMap<>();
         data.put("data", "PLUGIN_NOT_FOUND");
-        return data;
+        poster.post(data);
     }
 }
 

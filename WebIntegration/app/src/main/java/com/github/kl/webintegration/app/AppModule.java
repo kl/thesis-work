@@ -4,7 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 
-import com.github.kl.webintegration.app.controllers.FilePickerPluginController;
+import com.github.kl.webintegration.app.controllers.BarcodeController;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -33,8 +33,8 @@ public class AppModule {
     @Provides @Singleton @ForApplication
     Context provideApplicationContext() { return application; }
 
-    @Provides PluginControllerCollection providePluginControllerCollection(
-            FilePickerPluginController c1
+    @Provides @Singleton PluginControllerCollection providePluginControllerCollection(
+            BarcodeController c1
     )
     {
         return new PluginControllerCollection(c1);

@@ -45,12 +45,17 @@ __END__
       margin-left: auto;
       margin-right: auto;
     } 
-    a#main {
-      font-size: 55;
+    div#links a {
+      font-size: 30;
+      margin-right: 10;
     }
-    li {
-      font-size: 40;
+    ul#message_list {
+      list-style-type: none;
     }
+    div#message_list {
+      font-size: 30;
+    }
+
   </style>
 
 </head>
@@ -59,10 +64,12 @@ __END__
 
 @@ main
 <div id="main">
-<p><a id="main" href="salestab.android://CHEESE_GRATER" onclick="startPolling()">Start non-existing plugin</a></p>
-<p><a id="main" href="salestab.android://FILE_PICKER" onclick="startPolling()">Start FilePicker plugin</a></p>
-<ul id="message_list">
-</ul>
+  <div id="links">
+    <a href="salestab.android://BARCODE_SCANNER" onclick="startPolling()">BarcodeScanner</a>
+    <a href="salestab.android://CHEESE_GRATER" onclick="startPolling()">Non-existing</a>
+  </div>
+  <hr/>
+  <div id="message_list" />
 </div>
 
 <script>
@@ -70,12 +77,15 @@ function startPolling() {
 
   function poll() {
       $.get("/appdata", function(data) {
-        if (data.message == "PLUGIN_NOT_FOUND") {
+        if (data.message === "PLUGIN_NOT_FOUND") {
           clearInterval(pollInterval);
           alert("Plugin not found")
-        } else if (data.message != null) {
-          $("#message_list").append("<li>" + data.message + "</li>");
+        } else if (data.message === "PLUGIN_USER_CANCEL") {
           clearInterval(pollInterval);
+          alert("User canceled")
+        } else if (data.message != null) {
+          clearInterval(pollInterval);
+          $("#message_list").append("<p>" + data.message + "</p>");
         }
       }); 
   }

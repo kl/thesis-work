@@ -4,6 +4,9 @@ import android.app.Application;
 import dagger.ObjectGraph;
 
 public class WebIntegrationApplication extends Application {
+
+    public static final String LOG_TAG = WebIntegrationApplication.class.getCanonicalName();
+
     private ObjectGraph graph;
 
     @Override public void onCreate() {
