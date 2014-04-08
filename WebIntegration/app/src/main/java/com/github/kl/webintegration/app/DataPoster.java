@@ -2,6 +2,7 @@ package com.github.kl.webintegration.app;
 
 import android.content.res.Resources;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -10,6 +11,8 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +22,8 @@ public class DataPoster {
 
     @Inject Resources resources;
     @Inject HttpClient httpClient;
+
+    private final Collection<PostCompletedListener> listeners = new HashSet<>();
 
     @Inject public DataPoster() { }
 
@@ -42,7 +47,8 @@ public class DataPoster {
                try {
                    HttpPost httppost = new HttpPost(serverPostURI());
                    httppost.setEntity(getPostFormEntity(postData));
-                   httpClient.execute(httppost);
+                   HttpResponse result = httpClient.execute(httppost);
+                   notifyListeners(result);
                } catch (IOException e) {
                    e.printStackTrace();
                }
@@ -57,6 +63,18 @@ public class DataPoster {
                return new UrlEncodedFormEntity(nameValuePairs);
            }
        };
+    }
+
+    private void notifyListeners(HttpResponse result) {
+        for (PostCompletedListener l : listeners) l.onPostCompleted(result);
+    }
+
+    public void addOnPostCompletedListener(PostCompletedListener listener) {
+        listeners.add(listener);
+    }
+
+    public static interface PostCompletedListener {
+        public void onPostCompleted(HttpResponse result);
     }
 }
 

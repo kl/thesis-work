@@ -8,35 +8,24 @@ import com.github.kl.webintegration.app.PluginResultHandler;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
+public abstract class ScanControllerBase implements PluginController {
 
-public class BarcodeController implements PluginController {
+    private String type;
+    private int requestCode;
 
-    private static final String TYPE = "BARCODE_SCANNER";
-    private static final int REQUEST_CODE = 0xBEEF;
-
-    @Inject
-    public BarcodeController() { }
+    public ScanControllerBase(String type, int requestCode) {
+        this.type = type;
+        this.requestCode = requestCode;
+    }
 
     @Override
     public String getType() {
-        return TYPE;
+        return type;
     }
 
     @Override
     public int getRequestCode() {
-        return REQUEST_CODE;
-    }
-
-    @Override
-    public Intent getPluginIntent() {
-        Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-        intent.putExtra("MODE", "SCAN_MODE");   // Scan all formats
-        intent.putExtra("PROMPT_MESSAGE", "Läs in en barkod");
-        intent.putExtra("SCAN_WIDTH", 500);
-        intent.putExtra("SCAN_HEIGHT", 50);
-        intent.putExtra("SAVE_HISTORY", false); // Don't save barcode in Barcode Scanner's history
-        return intent;
+        return requestCode;
     }
 
     @Override

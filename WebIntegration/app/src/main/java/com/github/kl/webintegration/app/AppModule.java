@@ -4,7 +4,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 
-import com.github.kl.webintegration.app.controllers.BarcodeController;
+import com.github.kl.webintegration.app.controllers.AllScanController;
+import com.github.kl.webintegration.app.controllers.BarcodeScanController;
+import com.github.kl.webintegration.app.controllers.ProductScanController;
+import com.github.kl.webintegration.app.controllers.QRScanController;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -34,10 +37,13 @@ public class AppModule {
     Context provideApplicationContext() { return application; }
 
     @Provides @Singleton PluginControllerCollection providePluginControllerCollection(
-            BarcodeController c1
+            BarcodeScanController bsc,
+            QRScanController qsc,
+            AllScanController asc,
+            ProductScanController psc
     )
     {
-        return new PluginControllerCollection(c1);
+        return new PluginControllerCollection(bsc, qsc, asc, psc);
     }
 
     @Provides @Singleton

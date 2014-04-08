@@ -65,7 +65,10 @@ __END__
 @@ main
 <div id="main">
   <div id="links">
-    <a href="salestab.android://BARCODE_SCANNER" onclick="startPolling()">BarcodeScanner</a>
+    <a href="salestab.android://SCANNER_BARCODE" onclick="startPolling()">Barcode</a>
+    <a href="salestab.android://SCANNER_QR" onclick="startPolling()">QR</a>
+    <a href="salestab.android://SCANNER_PRODUCT" onclick="startPolling()">Product code</a>
+    <a href="salestab.android://SCANNER_ALL" onclick="startPolling()">All</a>
     <a href="salestab.android://CHEESE_GRATER" onclick="startPolling()">Non-existing</a>
   </div>
   <hr/>

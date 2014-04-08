@@ -15,9 +15,9 @@ public class PluginControllerCollection {
     }
 
     public PluginController getPluginController(String type) throws PluginControllerNotFoundException {
-        for (PluginController controller : controllerSet) {
-            if (controller.getType().equals(type)) return controller;
-        }
+        for (PluginController controller : controllerSet)
+            if (type.equals(controller.getType())) return controller;
+
         throw new PluginControllerNotFoundException(type);
     }
 

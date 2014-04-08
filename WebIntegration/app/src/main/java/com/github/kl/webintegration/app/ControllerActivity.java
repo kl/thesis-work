@@ -8,13 +8,16 @@ import android.util.Log;
 
 import com.github.kl.webintegration.app.PluginControllerCollection.PluginControllerNotFoundException;
 import com.github.kl.webintegration.app.controllers.PluginController;
+import com.github.kl.webintegration.app.DataPoster.PostCompletedListener;
+
+import org.apache.http.HttpResponse;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-public class ControllerActivity extends Activity implements PluginResultHandler {
+public class ControllerActivity extends Activity implements PluginResultHandler, PostCompletedListener {
 
     public static String LOG_TAG = "WebIntegration";
 
@@ -27,6 +30,7 @@ public class ControllerActivity extends Activity implements PluginResultHandler 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bootstrapInjection();
+        poster.addOnPostCompletedListener(this);
 
         try {
             selectedPluginController = findControllerForIntent(getIntent());
@@ -36,7 +40,6 @@ public class ControllerActivity extends Activity implements PluginResultHandler 
         } catch (PluginControllerNotFoundException e) {
             Log.e(LOG_TAG, "Unknown plugin controller for type: " + e.getType());
             postPluginNotFound();
-            finish();
         }
     }
 
@@ -58,13 +61,11 @@ public class ControllerActivity extends Activity implements PluginResultHandler 
     @Override
     public void onPluginResult(Map<String, String> result, PluginController controller) {
         poster.post(result);
-        finish();
     }
 
     @Override
     public void onPluginCancel(PluginController controller) {
         postCancel(controller.getType());
-        finish();
     }
 
     private void postCancel(String type) {
@@ -78,6 +79,11 @@ public class ControllerActivity extends Activity implements PluginResultHandler 
         Map<String, String> data = new HashMap<>();
         data.put("data", "PLUGIN_NOT_FOUND");
         poster.post(data);
+    }
+
+    @Override
+    public void onPostCompleted(HttpResponse result) {
+        finish();
     }
 }
 

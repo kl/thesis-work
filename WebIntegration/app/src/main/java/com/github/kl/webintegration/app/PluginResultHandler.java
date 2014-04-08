@@ -1,6 +1,5 @@
 package com.github.kl.webintegration.app;
 
-import com.github.kl.webintegration.app.controllers.BarcodeController;
 import com.github.kl.webintegration.app.controllers.PluginController;
 
 import java.util.Map;

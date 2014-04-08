@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import com.github.kl.webintegration.app.PluginResultHandler;
 
+import java.util.List;
 import java.util.Map;
 
 public interface PluginController {
