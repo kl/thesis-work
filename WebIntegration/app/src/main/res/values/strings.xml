@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">WebIntegration</string>
+    <string name="post_progress_dialog_title">Posting data to server</string>
+    <string name="post_progress_dialog_message">Please wait...</string>
 </resources>

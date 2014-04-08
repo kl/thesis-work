@@ -45,6 +45,11 @@ public class DataPoster {
 
            @Override public void run() {
                try {
+                   //try {
+                   //    Thread.sleep(10000);
+                   //} catch (InterruptedException e) {
+                   //    e.printStackTrace();
+                   //}
                    HttpPost httppost = new HttpPost(serverPostURI());
                    httppost.setEntity(getPostFormEntity(postData));
                    HttpResponse result = httpClient.execute(httppost);

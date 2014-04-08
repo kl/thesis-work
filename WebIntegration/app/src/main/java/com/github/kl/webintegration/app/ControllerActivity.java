@@ -1,6 +1,7 @@
 package com.github.kl.webintegration.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.util.Log;
 import com.github.kl.webintegration.app.PluginControllerCollection.PluginControllerNotFoundException;
 import com.github.kl.webintegration.app.controllers.PluginController;
 import com.github.kl.webintegration.app.DataPoster.PostCompletedListener;
+import com.google.common.base.Preconditions;
 
 import org.apache.http.HttpResponse;
 
@@ -25,6 +27,7 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
     @Inject PluginControllerCollection controllers;
 
     private PluginController selectedPluginController;
+    private ProgressDialog progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,11 +63,13 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
 
     @Override
     public void onPluginResult(Map<String, String> result, PluginController controller) {
+        showPostProgressDialog();
         poster.post(result);
     }
 
     @Override
     public void onPluginCancel(PluginController controller) {
+        showPostProgressDialog();
         postCancel(controller.getType());
     }
 
@@ -83,7 +88,15 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
 
     @Override
     public void onPostCompleted(HttpResponse result) {
+        if (progressDialog != null) progressDialog.dismiss();
         finish();
+    }
+
+    private void showPostProgressDialog() {
+        progressDialog = ProgressDialog.show(this,
+                                             getString(R.string.post_progress_dialog_title),
+                                             getString(R.string.post_progress_dialog_message),
+                                             true);
     }
 }
 
