@@ -3,7 +3,7 @@ package com.github.kl.webintegration.app;
 import android.app.Application;
 import dagger.ObjectGraph;
 
-public class WebIntegrationApplication extends Application {
+public class WebIntegrationApplication extends Application implements Injector {
 
     public static final String LOG_TAG = WebIntegrationApplication.class.getCanonicalName();
 

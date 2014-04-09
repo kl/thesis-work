@@ -1,18 +1,31 @@
 package com.github.kl.webintegration.app.controllers;
 
+import android.app.Activity;
 import android.content.Intent;
 
 import com.github.kl.webintegration.app.PluginResultHandler;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-public interface PluginController {
-    String getType();
+public abstract class PluginController {
 
-    void onActivityResult(int requestCode, int resultCode, Intent data, PluginResultHandler handler);
+    private String type;
+    private int requestCode;
 
-    Intent getPluginIntent();
+    public PluginController(String type, int requestCode) {
+        this.type = type;
+        this.requestCode = requestCode;
+    }
 
-    int getRequestCode();
+    abstract public Intent getPluginIntent();
+
+    abstract public void onActivityResult(int requestCode, int resultCode, Intent data, PluginResultHandler handler);
+
+    public String getType() { return type; }
+
+    public int getRequestCode() { return requestCode; }
 }
+

@@ -4,7 +4,7 @@ import android.content.Intent;
 
 import javax.inject.Inject;
 
-public class QRScanController extends ScanControllerBase implements PluginController {
+public class QRScanController extends ScanController {
 
     private static final String TYPE = "SCANNER_QR";
     private static final int REQUEST_CODE = 0xC0DE;

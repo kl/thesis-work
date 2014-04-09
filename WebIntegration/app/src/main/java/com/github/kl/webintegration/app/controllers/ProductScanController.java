@@ -4,7 +4,7 @@ import android.content.Intent;
 
 import javax.inject.Inject;
 
-public class ProductScanController extends ScanControllerBase implements PluginController {
+public class ProductScanController extends ScanController {
 
     private static final String TYPE = "SCANNER_PRODUCT";
     private static final int REQUEST_CODE = 0xABBA;

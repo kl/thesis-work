@@ -1,5 +1,6 @@
 package com.github.kl.webintegration.app;
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
@@ -42,9 +43,7 @@ public class AppModule {
             AllScanController asc,
             ProductScanController psc
     )
-    {
-        return new PluginControllerCollection(bsc, qsc, asc, psc);
-    }
+    { return new PluginControllerCollection(bsc, qsc, asc, psc); }
 
     @Provides @Singleton
     ContentResolver provideContentResolver() { return application.getContentResolver(); }
@@ -55,3 +54,8 @@ public class AppModule {
     @Provides
     HttpClient provideHttpClient() { return new DefaultHttpClient(); }
 }
+
+
+
+
+

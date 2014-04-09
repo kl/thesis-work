@@ -83,7 +83,7 @@ function startPolling() {
         if (data.message === "PLUGIN_NOT_FOUND") {
           clearInterval(pollInterval);
           alert("Plugin not found")
-        } else if (data.message === "PLUGIN_USER_CANCEL") {
+        } else if (data.message === "USER_CANCEL") {
           clearInterval(pollInterval);
           alert("User canceled")
         } else if (data.message != null) {

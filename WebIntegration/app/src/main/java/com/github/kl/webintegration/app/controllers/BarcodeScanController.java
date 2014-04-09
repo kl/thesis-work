@@ -4,7 +4,7 @@ import android.content.Intent;
 
 import javax.inject.Inject;
 
-public class BarcodeScanController extends ScanControllerBase implements PluginController {
+public class BarcodeScanController extends ScanController {
 
     private static final String TYPE = "SCANNER_BARCODE";
     private static final int REQUEST_CODE = 0xBEEF;

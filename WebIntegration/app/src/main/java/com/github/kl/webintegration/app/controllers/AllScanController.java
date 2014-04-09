@@ -4,7 +4,7 @@ import android.content.Intent;
 
 import javax.inject.Inject;
 
-public class AllScanController extends ScanControllerBase implements PluginController {
+public class AllScanController extends ScanController {
 
     private static final String TYPE = "SCANNER_ALL";
     private static final int REQUEST_CODE = 0xCAFE;

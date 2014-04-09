@@ -8,27 +8,12 @@ import com.github.kl.webintegration.app.PluginResultHandler;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class ScanControllerBase implements PluginController {
+public abstract class ScanController extends PluginController {
 
-    private String type;
-    private int requestCode;
-
-    public ScanControllerBase(String type, int requestCode) {
-        this.type = type;
-        this.requestCode = requestCode;
+    public ScanController(String type, int requestCode) {
+        super(type, requestCode);
     }
 
-    @Override
-    public String getType() {
-        return type;
-    }
-
-    @Override
-    public int getRequestCode() {
-        return requestCode;
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data, PluginResultHandler handler) {
         if (requestCode == getRequestCode()) {
             switch (resultCode) {
