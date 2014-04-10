@@ -1,13 +1,14 @@
 package com.github.kl.webintegration.app.test;
 
 import android.content.res.Resources;
-import android.test.InstrumentationTestCase;
 
-import com.github.kl.webintegration.app.DataPoster;
+import com.github.kl.webintegration.app.handlers.HttpPostHandler;
 import com.github.kl.webintegration.app.R;
 
 import junit.framework.TestCase;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 
@@ -25,10 +26,12 @@ import dagger.Provides;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class DataPosterTest extends TestCase {
+public class HttpPostHandlerTest extends TestCase {
 
-    @Inject DataPoster dataPoster;
+    @Inject
+    HttpPostHandler httpPostHandler;
 
     // These objects are injected with @Singleton. Therefore they are they same objects that
     // are injected in to the class under test, and they can be checked in the test methods.
@@ -36,7 +39,7 @@ public class DataPosterTest extends TestCase {
     @Inject HttpClient httpClient;
 
     @Module(
-            injects = DataPosterTest.class,
+            injects = HttpPostHandlerTest.class,
             overrides = true
     )
     static class TestModule {
@@ -48,7 +51,18 @@ public class DataPosterTest extends TestCase {
 
         @Provides @Singleton
         HttpClient provideHttpClient() {
-            return mock(HttpClient.class);
+
+            HttpClient mockClient = mock(HttpClient.class);
+            HttpResponse mockResponse = mock(HttpResponse.class);
+
+            try {
+                when(mockResponse.getEntity()).thenReturn(mock(HttpEntity.class));
+                when(mockClient.execute(any(HttpPost.class))).thenReturn(mockResponse);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return mockClient;
         }
     }
 
@@ -59,7 +73,7 @@ public class DataPosterTest extends TestCase {
 
         ObjectGraph.create(new TestModule()).inject(this);
 
-        dataPoster.post(getStubTestData());
+        httpPostHandler.handleResult(getStubTestData());
         Thread.sleep(500);  // Sleep because post() starts a thread. Is there a better solution?
     }
 

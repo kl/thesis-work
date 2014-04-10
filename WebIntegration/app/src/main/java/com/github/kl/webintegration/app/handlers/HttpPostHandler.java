@@ -1,6 +1,8 @@
-package com.github.kl.webintegration.app;
+package com.github.kl.webintegration.app.handlers;
 
 import android.content.res.Resources;
+
+import com.github.kl.webintegration.app.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -11,23 +13,54 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-public class DataPoster {
+public class HttpPostHandler extends ResultHandler {
+
+    // TODO: change these fields to preferences
+    public static final String POST_CANCEL_KEY = "data";
+    public static final String POST_CANCEL_VALUE = "USER_CANCEL";
+    public static final String POST_CANCEL_TYPE_KEY = "type";
+
+    public static final String POST_NOT_FOUND_KEY = "data";
+    public static final String POST_NOT_FOUND_VALUE = "PLUGIN_NOT_FOUND";
+    public static final String POST_NOT_FOUND_TYPE_KEY = "type";
 
     @Inject Resources resources;
     @Inject HttpClient httpClient;
 
-    private final Collection<PostCompletedListener> listeners = new HashSet<>();
+    private static final String TYPE = "HTTP_POST";
 
-    @Inject public DataPoster() { }
+    public HttpPostHandler() {
+        super(TYPE);
+    }
 
-    public void post(final Map<String, String> postData) {
+    @Override
+    public void handleResult(Map<String, String> result) {
+        post(result);
+    }
+
+    @Override
+    public void handlePluginNotFound(String pluginType) {
+        Map<String, String> data = new HashMap<>();
+        data.put(POST_NOT_FOUND_KEY, POST_NOT_FOUND_VALUE);
+        data.put(POST_NOT_FOUND_TYPE_KEY, pluginType);
+        post(data);
+    }
+
+    @Override
+    public void handleCancel(String pluginType) {
+        Map<String, String> data = new HashMap<>();
+        data.put(POST_CANCEL_KEY, POST_CANCEL_VALUE);
+        data.put(POST_CANCEL_TYPE_KEY, pluginType);
+        post(data);
+    }
+
+    private void post(final Map<String, String> postData) {
         new Thread(getPostRunnable(postData)).start();
     }
 
@@ -47,8 +80,9 @@ public class DataPoster {
                try {
                    HttpPost httppost = new HttpPost(serverPostURI());
                    httppost.setEntity(getPostFormEntity(postData));
-                   HttpResponse result = httpClient.execute(httppost);
-                   notifyListeners(result);
+                   HttpResponse response = httpClient.execute(httppost);
+                   response.getEntity().consumeContent();
+                   notifyListeners();
                } catch (IOException e) {
                    e.printStackTrace();
                }
@@ -63,18 +97,6 @@ public class DataPoster {
                return new UrlEncodedFormEntity(nameValuePairs);
            }
        };
-    }
-
-    private void notifyListeners(HttpResponse result) {
-        for (PostCompletedListener l : listeners) l.onPostCompleted(result);
-    }
-
-    public void addOnPostCompletedListener(PostCompletedListener listener) {
-        listeners.add(listener);
-    }
-
-    public static interface PostCompletedListener {
-        public void onPostCompleted(HttpResponse result);
     }
 }
 

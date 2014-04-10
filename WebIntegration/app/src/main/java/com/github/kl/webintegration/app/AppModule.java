@@ -7,12 +7,21 @@ import android.content.res.Resources;
 
 import com.github.kl.webintegration.app.controllers.AllScanController;
 import com.github.kl.webintegration.app.controllers.BarcodeScanController;
+import com.github.kl.webintegration.app.controllers.PluginController;
 import com.github.kl.webintegration.app.controllers.ProductScanController;
 import com.github.kl.webintegration.app.controllers.QRScanController;
+import com.github.kl.webintegration.app.handlers.HttpPostHandler;
+import com.github.kl.webintegration.app.handlers.ResultHandler;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -37,13 +46,28 @@ public class AppModule {
     @Provides @Singleton @ForApplication
     Context provideApplicationContext() { return application; }
 
-    @Provides @Singleton PluginControllerCollection providePluginControllerCollection(
+    @Provides @Singleton @Named("pluginControllers")
+    Set<PluginController> providePluginControllers(
             BarcodeScanController bsc,
             QRScanController qsc,
             AllScanController asc,
             ProductScanController psc
     )
-    { return new PluginControllerCollection(bsc, qsc, asc, psc); }
+    {
+        Set<PluginController> controllers = new HashSet<>();
+        controllers.addAll(Lists.newArrayList(bsc, qsc, asc, psc));
+        return controllers;
+    }
+
+    @Provides @Singleton @Named("resultHandlers")
+    Set<ResultHandler> provideResultHandlers(
+            HttpPostHandler hph
+    )
+    {
+        Set<ResultHandler> handlers = new HashSet<>();
+        handlers.addAll(Lists.newArrayList(hph));
+        return handlers;
+    }
 
     @Provides @Singleton
     ContentResolver provideContentResolver() { return application.getContentResolver(); }
