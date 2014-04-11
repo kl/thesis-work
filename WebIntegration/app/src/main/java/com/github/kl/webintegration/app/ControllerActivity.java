@@ -6,10 +6,9 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.github.kl.webintegration.app.controllers.PluginController;
-import com.github.kl.webintegration.app.handlers.HttpPostHandler;
 import com.github.kl.webintegration.app.handlers.ResultHandler;
+import com.github.kl.webintegration.app.handlers.ResultHandler.HandlerCompletedListener;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +16,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public class ControllerActivity extends Activity implements PluginResultHandler, ResultHandler.HandlerCompletedListener {
+public class ControllerActivity extends Activity implements PluginResultHandler, HandlerCompletedListener {
 
     public static final String LOG_TAG = "WebIntegration";
 

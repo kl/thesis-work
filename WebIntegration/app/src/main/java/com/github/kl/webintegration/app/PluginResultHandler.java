@@ -1,3 +1,4 @@
+
 package com.github.kl.webintegration.app;
 
 import com.github.kl.webintegration.app.controllers.PluginController;
@@ -9,3 +10,4 @@ public interface PluginResultHandler {
 
     void onPluginCancel(PluginController pluginController);
 }
+
