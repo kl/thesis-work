@@ -5,6 +5,9 @@ import android.content.Intent;
 
 import com.github.kl.webintegration.app.PluginResultHandler;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +31,13 @@ public abstract class ScanController extends PluginController {
     }
 
     private void handleResultOk(Intent data, PluginResultHandler handler) {
-        Map<String, String> result = new HashMap<>();
-        result.put("data", data.getStringExtra("SCAN_RESULT"));
-        handler.onPluginResult(result, this);
+        JSONObject jso = new JSONObject();
+        try {
+            jso.put("message", data.getStringExtra("SCAN_RESULT"));
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        handler.onPluginResult(jso, this);
     }
 }

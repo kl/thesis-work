@@ -1,5 +1,7 @@
 package com.github.kl.webintegration.app;
 
+import com.github.kl.webintegration.app.handlers.HttpServerHandler.ServerService;
+
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -11,6 +13,7 @@ import com.github.kl.webintegration.app.controllers.PluginController;
 import com.github.kl.webintegration.app.controllers.ProductScanController;
 import com.github.kl.webintegration.app.controllers.QRScanController;
 import com.github.kl.webintegration.app.handlers.HttpPostHandler;
+import com.github.kl.webintegration.app.handlers.HttpServerHandler;
 import com.github.kl.webintegration.app.handlers.ResultHandler;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -28,7 +31,7 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module(
-        injects = ControllerActivity.class,
+        injects = {ControllerActivity.class, ServerService.class},
         library = true
 )
 public class AppModule {
@@ -61,11 +64,12 @@ public class AppModule {
 
     @Provides @Singleton @Named("resultHandlers")
     Set<ResultHandler> provideResultHandlers(
-            HttpPostHandler hph
+            HttpPostHandler hph,
+            HttpServerHandler hsh
     )
     {
         Set<ResultHandler> handlers = new HashSet<>();
-        handlers.addAll(Lists.newArrayList(hph));
+        handlers.addAll(Lists.newArrayList(hph, hsh));
         return handlers;
     }
 
@@ -77,6 +81,9 @@ public class AppModule {
 
     @Provides
     HttpClient provideHttpClient() { return new DefaultHttpClient(); }
+
+    @Provides @Singleton
+    HttpServerHandler.Server provideServer() { return new HttpServerHandler.Server(9888); } // TODO: port to preference
 }
 
 

@@ -26,6 +26,7 @@ get "/appdata" do
   message = settings.current_message
   settings.current_message = nil
 
+  response.headers['Access-Control-Allow-Origin'] = '*'
   {message: message}.to_json
 end
 
@@ -55,7 +56,6 @@ __END__
     div#message_list {
       font-size: 30;
     }
-
   </style>
 
 </head>
@@ -65,33 +65,42 @@ __END__
 @@ main
 <div id="main">
   <div id="links">
-    <a href="app://web.android/SCANNER_BARCODE/HTTP_POST" onclick="startPolling()">Barcode</a>
-    <a href="app://web.android/SCANNER_QR/HTTP_POST"      onclick="startPolling()">QR</a>
-    <a href="app://web.android/SCANNER_PRODUCT/HTTP_POST" onclick="startPolling()">Product</a>
-    <a href="app://web.android/SCANNER_ALL/HTTP_POST"     onclick="startPolling()">All</a>
-    <a href="app://web.android/CHEESE_GRATER/HTTP_POST"   onclick="startPolling()">Non-existing</a>
+    <a href="app://web.android/SCANNER_BARCODE/HTTP_POST"   onclick="startPollingRemote()">Barcode</a>
+    <a href="app://web.android/SCANNER_QR/HTTP_POST"        onclick="startPollingRemote()">QR</a>
+    <a href="app://web.android/SCANNER_PRODUCT/HTTP_POST"   onclick="startPollingRemote()">Product</a>
+    <a href="app://web.android/SCANNER_ALL/HTTP_POST"       onclick="startPollingRemote()">All</a>
+    <a href="app://web.android/CHEESE_GRATER/HTTP_POST"     onclick="startPollingRemote()">Non-existing</a>
+    <a href="app://web.android/SCANNER_BARCODE/HTTP_SERVER" onclick="startPollingLocal()">Server test</a>
   </div>
   <hr/>
   <div id="message_list" />
 </div>
 
 <script>
-function startPolling() {
+function startPollingRemote() {                         
+  performPoll("/appdata");
+}
+
+function startPollingLocal() {                         
+  performPoll("http://localhost:9888");
+}
+
+function performPoll(url) {
 
   function poll() {
-      $.get("/appdata", function(data) {
-        if (data.message === "PLUGIN_NOT_FOUND") {
-          clearInterval(pollInterval);
-          alert("Plugin not found")
-        } else if (data.message === "USER_CANCEL") {
-          clearInterval(pollInterval);
-          alert("User canceled")
-        } else if (data.message != null) {
-          clearInterval(pollInterval);
-          $("#message_list").append("<p>" + data.message + "</p>");
-        }
-      }); 
+    $.get(url, function(data) {
+      if (data.message === "PLUGIN_NOT_FOUND") {
+        clearInterval(pollInterval);
+        alert("Plugin not found")
+      } else if (data.message === "USER_CANCEL") {
+        clearInterval(pollInterval);
+        alert("User canceled")
+      } else if (data.message != null) {
+        clearInterval(pollInterval);
+        $("#message_list").append("<p>" + data.message + "</p>");
+      }
+    });
   }
-  var pollInterval = setInterval(function() { poll(); }, 1000);
+  var pollInterval = setInterval(poll, 1000);
 }
 </script>

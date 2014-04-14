@@ -5,17 +5,13 @@ import android.content.res.Resources;
 import com.github.kl.webintegration.app.R;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.entity.StringEntity;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -35,32 +31,43 @@ public class HttpPostHandler extends ResultHandler {
 
     private static final String TYPE = "HTTP_POST";
 
+    @Inject
     public HttpPostHandler() {
         super(TYPE);
     }
 
     @Override
-    public void handleResult(Map<String, String> result) {
+    public void handleResult(JSONObject result) {
         post(result);
     }
 
     @Override
     public void handlePluginNotFound(String pluginType) {
-        Map<String, String> data = new HashMap<>();
-        data.put(POST_NOT_FOUND_KEY, POST_NOT_FOUND_VALUE);
-        data.put(POST_NOT_FOUND_TYPE_KEY, pluginType);
-        post(data);
+        JSONObject jso = new JSONObject();
+        try {
+            jso.put(POST_NOT_FOUND_KEY, POST_NOT_FOUND_VALUE);
+            jso.put(POST_NOT_FOUND_TYPE_KEY, pluginType);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        post(jso);
     }
 
     @Override
     public void handleCancel(String pluginType) {
-        Map<String, String> data = new HashMap<>();
-        data.put(POST_CANCEL_KEY, POST_CANCEL_VALUE);
-        data.put(POST_CANCEL_TYPE_KEY, pluginType);
-        post(data);
+        JSONObject jso = new JSONObject();
+        try {
+            jso.put(POST_CANCEL_KEY, POST_CANCEL_VALUE);
+            jso.put(POST_CANCEL_TYPE_KEY, pluginType);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        post(jso);
     }
 
-    private void post(final Map<String, String> postData) {
+    private void post(JSONObject postData) {
         new Thread(getPostRunnable(postData)).start();
     }
 
@@ -72,29 +79,20 @@ public class HttpPostHandler extends ResultHandler {
         return "http://" + IP + ":" + port + "/" + post;
     }
 
-    private Runnable getPostRunnable(final Map<String, String> postData) {
+    private Runnable getPostRunnable(final JSONObject postData) {
 
        return new Runnable() {
 
            @Override public void run() {
                try {
                    HttpPost httppost = new HttpPost(serverPostURI());
-                   httppost.setEntity(getPostFormEntity(postData));
+                   httppost.setEntity(new StringEntity(postData.toString()));
                    HttpResponse response = httpClient.execute(httppost);
                    response.getEntity().consumeContent();
-                   notifyListeners();
+                   notifyHandlerComplete();
                } catch (IOException e) {
                    e.printStackTrace();
                }
-           }
-
-           private UrlEncodedFormEntity getPostFormEntity(final Map<String, String> postData) throws IOException {
-               List<NameValuePair> nameValuePairs = new ArrayList<>();
-
-               for (Map.Entry<String, String> entry : postData.entrySet()) {
-                   nameValuePairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-               }
-               return new UrlEncodedFormEntity(nameValuePairs);
            }
        };
     }

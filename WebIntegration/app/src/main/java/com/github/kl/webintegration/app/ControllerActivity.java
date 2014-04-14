@@ -9,6 +9,8 @@ import com.github.kl.webintegration.app.controllers.PluginController;
 import com.github.kl.webintegration.app.handlers.ResultHandler;
 import com.github.kl.webintegration.app.handlers.ResultHandler.HandlerCompletedListener;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,7 +91,7 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
     }
 
     @Override
-    public void onPluginResult(Map<String, String> result, PluginController controller) {
+    public void onPluginResult(JSONObject result, PluginController controller) {
         progressDialogHandler.show(this);
         handler.handleResult(result);
     }

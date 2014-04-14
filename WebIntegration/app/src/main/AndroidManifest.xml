@@ -20,6 +20,8 @@
                 <data android:scheme="app" />
             </intent-filter>
         </activity>
+        <service android:name=".handlers.HttpServerHandler$ServerService"
+                 android:exported="false" />
     </application>
 
 </manifest>
