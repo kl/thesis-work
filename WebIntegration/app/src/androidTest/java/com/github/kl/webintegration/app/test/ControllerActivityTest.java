@@ -50,9 +50,7 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
     @Inject @Named("pluginControllers") Set<PluginController> controllers;
     @Inject @Named("resultHandlers") Set<ResultHandler> handlers;
 
-    @Module(
-            injects = {ControllerActivity.class, ControllerActivityTest.class}
-    )
+    @Module(injects = {ControllerActivity.class, ControllerActivityTest.class})
     static class TestModule {
 
         @Provides @Singleton @Named("pluginControllers")
@@ -83,21 +81,12 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
         }
     }
 
-    static class MockInjectorApplication extends MockApplication implements Injector {
-
-        private ObjectGraph graph = ObjectGraph.create(new TestModule());
-
-        @Override public void inject(Object object) {
-            graph.inject(object);
-        }
-    }
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
         TestHelper.setDexCache();
 
-        MockInjectorApplication app = new MockInjectorApplication();
+        MockInjectorApplication app = new MockInjectorApplication(new TestModule());
         app.inject(this);
         setApplication(app);
     }
