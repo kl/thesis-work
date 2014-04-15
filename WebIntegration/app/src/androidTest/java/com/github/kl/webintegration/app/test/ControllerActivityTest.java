@@ -12,6 +12,9 @@ import com.github.kl.webintegration.app.controllers.PluginController;
 import com.github.kl.webintegration.app.handlers.ResultHandler;
 import com.google.common.base.Preconditions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -119,7 +122,7 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
         startActivityWithIntentUrlPath("/" + VALID_PLUGIN_NAME + "/" + VALID_HANDLER_NAME);
 
         ControllerActivity activity = getActivity();
-        Map<String, String> testResult = map("data", "test");
+        JSONObject testResult = jsonmap("data", "test");
         activity.onPluginResult(testResult, mock(PluginController.class)); // the second argument does not matter
 
         ResultHandler selectedHandler = getHandlerWithType(VALID_HANDLER_NAME);
@@ -162,13 +165,14 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
         return null;
     }
 
-    @SafeVarargs
-    private final <T> Map<T, T> map(T... input) {
+    private JSONObject jsonmap(String... input)  {
         Preconditions.checkArgument((input.length % 2) == 0, "Input must be of even length");
-        Map<T, T> map = new HashMap<>();
-        for (int i = 0; i < input.length; i += 2) {
-           map.put(input[i], input[i+1]);
-        }
-        return map;
+        JSONObject jso = new JSONObject();
+        try {
+            for (int i = 0; i < input.length; i += 2) {
+                jso.put(input[i], input[i + 1]);
+            }
+        } catch (JSONException e) { throw new RuntimeException(e); }
+        return jso;
     }
 }

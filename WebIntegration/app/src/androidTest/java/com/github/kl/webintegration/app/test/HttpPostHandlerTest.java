@@ -11,6 +11,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -73,7 +74,7 @@ public class HttpPostHandlerTest extends TestCase {
 
         ObjectGraph.create(new TestModule()).inject(this);
 
-        httpPostHandler.handleResult(getStubTestData());
+        httpPostHandler.handleResult(new JSONObject());
         Thread.sleep(500);  // Sleep because post() starts a thread. Is there a better solution?
     }
 
@@ -85,10 +86,6 @@ public class HttpPostHandlerTest extends TestCase {
 
     public void testExecutesHttpPostRequest() throws IOException {
         verify(httpClient).execute(any(HttpPost.class));
-    }
-
-    private Map<String, String> getStubTestData() {
-        return new HashMap<>();
     }
 }
 
