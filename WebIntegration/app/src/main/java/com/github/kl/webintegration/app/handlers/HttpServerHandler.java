@@ -10,6 +10,7 @@ import com.github.kl.webintegration.app.ForApplication;
 import com.github.kl.webintegration.app.Injector;
 import com.google.common.base.Preconditions;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -22,11 +23,7 @@ import static com.github.kl.webintegration.app.WebIntegrationApplication.LOG_TAG
 
 public class HttpServerHandler extends ResultHandler {
 
-    private static JSONObject result;
-    public static JSONObject getResult() { return result; }
-
     private static final String TYPE = "HTTP_SERVER";
-    private static final int PORT = 9888;
 
     @Inject @ForApplication
     Context context;
@@ -37,19 +34,18 @@ public class HttpServerHandler extends ResultHandler {
     }
 
     @Override
-    public void handlePluginNotFound(String pluginType) {
+    public void handleResult(JSONObject result) {
+        Log.d(LOG_TAG, "handleResult");
+        context.startService(getServerIntent(result.toString()));
 
+        notifyHandlerComplete();
     }
 
     @Override
-    public void handleResult(JSONObject result) {
-        // Start server. Wait for GET from browser. Send result. Call back to activity.
-
-        Log.d(LOG_TAG, "handleResult");
-        HttpServerHandler.result = result; // hack to avoid Parcelable
-
-        Intent intent = new Intent(context, ServerService.class);
-        context.startService(intent);
+    public void handlePluginNotFound(String pluginType) {
+        Log.d(LOG_TAG, "handlePluginNotFound");
+        String json = "{\"data\": \"PLUGIN_NOT_FOUND\"}";
+        context.startService(getServerIntent(json));
 
         notifyHandlerComplete();
     }
@@ -57,10 +53,16 @@ public class HttpServerHandler extends ResultHandler {
     @Override
     public void handleCancel(String type) {
         Log.d(LOG_TAG, "handleCancel");
-        Intent intent = new Intent(context, ServerService.class);
-        context.startService(intent);
+        String json = "{\"data\": \"USER_CANCEL\"}";
+        context.startService(getServerIntent(json));
 
         notifyHandlerComplete();
+    }
+
+    private Intent getServerIntent(String json) {
+        Intent intent = new Intent(context, ServerService.class);
+        intent.putExtra("JSON", json);
+        return intent;
     }
 
     public static class ServerService extends Service implements NanoHTTPD.SendCompleted {
@@ -76,12 +78,12 @@ public class HttpServerHandler extends ResultHandler {
         @Override
         public int onStartCommand(Intent intent, int flags, int startId) {
             Log.d(LOG_TAG, "onStartCommand");
-            Server.sendCompletedListener = this;
-            server.setResponseResult(HttpServerHandler.getResult());
             try {
+                JSONObject result = new JSONObject(intent.getStringExtra("JSON"));
+                server.setResponseResult(result);
                 server.start();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException|JSONException e) {
+                throw new RuntimeException(e);
             }
             return START_STICKY;
         }
