@@ -3,13 +3,16 @@ require 'sinatra'
 require 'json'
 
 set :server, 'thin'
-set :port, 9001
+set :port, 9000
 set :bind, '0.0.0.0'
 
 set :messages, []
 set :current_message, nil
 
+JSON_PATH = File.join(settings.root, "android_data.json")
+
 get "/android" do
+  File.write(JSON_PATH, {data: nil}.to_json)  # clear the current message.
   erb :main
 end
 
@@ -17,18 +20,16 @@ post "/android" do
   json = JSON.parse(request.body.read)
   message = json["message"]
 
-  settings.messages << message 
-  settings.current_message = message
+  File.write(JSON_PATH, {data: message}.to_json)
 end
 
 get "/appdata" do
   content_type :json
 
-  message = settings.current_message
-  settings.current_message = nil
+  data = JSON.parse(File.read(JSON_PATH))["data"]
 
   response.headers['Access-Control-Allow-Origin'] = '*'
-  {message: message}.to_json
+  {message: data}.to_json
 end
 
 __END__
