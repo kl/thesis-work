@@ -44,7 +44,7 @@ public class HttpServerHandler extends ResultHandler {
     @Override
     public void handlePluginNotFound(String pluginType) {
         Log.d(LOG_TAG, "handlePluginNotFound");
-        String json = "{\"data\": \"PLUGIN_NOT_FOUND\"}";
+        String json = "{\"message\": \"PLUGIN_NOT_FOUND\"}";
         context.startService(getServerIntent(json));
 
         notifyHandlerComplete();
@@ -53,7 +53,7 @@ public class HttpServerHandler extends ResultHandler {
     @Override
     public void handleCancel(String type) {
         Log.d(LOG_TAG, "handleCancel");
-        String json = "{\"data\": \"USER_CANCEL\"}";
+        String json = "{\"message\": \"USER_CANCEL\"}";
         context.startService(getServerIntent(json));
 
         notifyHandlerComplete();

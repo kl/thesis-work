@@ -12,6 +12,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONObject;
+import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -86,6 +87,12 @@ public class HttpPostHandlerTest extends TestCase {
 
     public void testExecutesHttpPostRequest() throws IOException {
         verify(httpClient).execute(any(HttpPost.class));
+    }
+
+    public void testSetsContentTypeToJson() throws IOException {
+        ArgumentCaptor<HttpPost> httpPostCaptor = ArgumentCaptor.forClass(HttpPost.class);
+        verify(httpClient).execute(httpPostCaptor.capture());
+        assertEquals("application/json", httpPostCaptor.getValue().getEntity().getContentType().getValue());
     }
 }
 

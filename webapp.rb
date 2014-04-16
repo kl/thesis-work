@@ -14,7 +14,8 @@ get "/android" do
 end
 
 post "/android" do
-  message = params[:data]
+  json = JSON.parse(request.body.read)
+  message = json["message"]
 
   settings.messages << message 
   settings.current_message = message

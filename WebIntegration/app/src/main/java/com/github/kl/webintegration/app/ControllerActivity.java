@@ -35,9 +35,10 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
         super.onCreate(savedInstanceState);
         bootstrapInjection();
 
-        // TODO: refactor
+        startPlugin(getIntent());
+    }
 
-        Intent intent = getIntent();
+    private void startPlugin(Intent intent) {
         String pluginType = getPluginType(intent);
         String handlerType = getHandlerType(intent);
 
@@ -67,7 +68,7 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
 
     private String getDataPathSegment(Intent intent, int index) {
         Uri data = intent.getData();
-        List<String> segments = data.getPathSegments();
+        List<String> segments = data.getPathSegments(); // TODO: handle null here
         return segments.get(index);
     }
 
