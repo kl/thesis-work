@@ -1,6 +1,7 @@
 package com.github.kl.webintegration.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,7 +13,6 @@ import com.github.kl.webintegration.app.handlers.ResultHandler.HandlerCompletedL
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -25,10 +25,12 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
     @Inject @Named("pluginControllers") Set<PluginController> pluginControllers;
     @Inject @Named("resultHandlers") Set<ResultHandler> resultHandlers;
 
-    @Inject PostProgressDialogHandler progressDialogHandler;
+    @Inject
+    ProgressDialogFactory progressDialogFactory;
 
     private PluginController controller;
     private ResultHandler    handler;
+    private ProgressDialog   progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,20 +95,28 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
 
     @Override
     public void onPluginResult(JSONObject result, PluginController controller) {
-        progressDialogHandler.show(this);
+        handleProgressDialog();
         handler.handleResult(result);
     }
 
     @Override
     public void onPluginCancel(PluginController controller) {
-        progressDialogHandler.show(this);
+        handleProgressDialog();
         handler.handleCancel(controller.getType());
     }
 
     @Override
     public void onHandlerCompleted() {
-        progressDialogHandler.dismiss();
+        if (progressDialog != null) progressDialog.dismiss();
         finish();
+    }
+
+    private void handleProgressDialog() {
+        if (handler.isUsingProgressDialog()) {
+            progressDialog = progressDialogFactory.newProgressDialog(this);
+            handler.onCustomizeProgressDialog(progressDialog);
+            progressDialog.show();
+        }
     }
 }
 

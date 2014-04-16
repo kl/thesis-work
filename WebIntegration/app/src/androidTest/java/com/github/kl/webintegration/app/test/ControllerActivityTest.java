@@ -1,13 +1,13 @@
 package com.github.kl.webintegration.app.test;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.test.ActivityUnitTestCase;
-import android.test.mock.MockApplication;
 
 import com.github.kl.webintegration.app.ControllerActivity;
-import com.github.kl.webintegration.app.Injector;
-import com.github.kl.webintegration.app.PostProgressDialogHandler;
+import com.github.kl.webintegration.app.ProgressDialogFactory;
 import com.github.kl.webintegration.app.controllers.PluginController;
 import com.github.kl.webintegration.app.handlers.ResultHandler;
 import com.google.common.base.Preconditions;
@@ -15,9 +15,7 @@ import com.google.common.base.Preconditions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -25,9 +23,9 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
-import dagger.ObjectGraph;
 import dagger.Provides;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,6 +67,7 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
 
             ResultHandler mockHandler = mock(ResultHandler.class);
             when(mockHandler.getType()).thenReturn(VALID_HANDLER_NAME);
+            when(mockHandler.isUsingProgressDialog()).thenReturn(true);
 
             Set<ResultHandler> handlers = new HashSet<>();
             handlers.add(mockHandler);
@@ -76,8 +75,10 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
         }
 
         @Provides @Singleton
-        PostProgressDialogHandler providePostProgressDialogHandler() {
-            return mock(PostProgressDialogHandler.class);
+        ProgressDialogFactory provideProgressDialogFactory() {
+            ProgressDialogFactory pdf = mock(ProgressDialogFactory.class);
+            when(pdf.newProgressDialog(any(Context.class))).thenReturn(mock(ProgressDialog.class));
+            return pdf;
         }
     }
 
@@ -92,13 +93,12 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
     }
 
     public void testFindsPluginWithFirstPathSegmentOfUrl() throws Exception {
-        startActivityWithIntentUrlPath("/" + VALID_PLUGIN_NAME + "/" + VALID_HANDLER_NAME);
+        startActivityWithValidPlugin();
 
         PluginController selectedController = getControllerWithType(VALID_PLUGIN_NAME);
         verify(selectedController).getPluginIntent();
         verify(selectedController).getRequestCode();
     }
-
 
     public void testCallsHandlePluginNotFoundWithUnknownPlugin() {
         startActivityWithIntentUrlPath("/" + INVALID_PLUGIN_NAME + "/" + VALID_HANDLER_NAME);
@@ -108,7 +108,7 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
     }
 
     public void testCallsHandleResultWhenPluginIsFound() {
-        startActivityWithIntentUrlPath("/" + VALID_PLUGIN_NAME + "/" + VALID_HANDLER_NAME);
+        startActivityWithValidPlugin();
 
         ControllerActivity activity = getActivity();
         JSONObject testResult = jsonmap("data", "test");
@@ -119,13 +119,27 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
     }
 
     public void testCallsHandleCancelWhenOnCancelIsCalled() {
-        startActivityWithIntentUrlPath("/" + VALID_PLUGIN_NAME + "/" + VALID_HANDLER_NAME);
+        startActivityWithValidPlugin();
 
         ControllerActivity activity = getActivity();
         activity.onPluginCancel(getControllerWithType(VALID_PLUGIN_NAME));
 
         ResultHandler selectedHandler = getHandlerWithType(VALID_HANDLER_NAME);
         verify(selectedHandler).handleCancel(VALID_PLUGIN_NAME);
+    }
+
+    public void testCallsOnCustomizePlugin() {
+        startActivityWithValidPlugin();
+
+        ControllerActivity activity = getActivity();
+        activity.onPluginResult(jsonmap("data", "test"), mock(PluginController.class)); // the second argument does not matter
+
+        ResultHandler selectedHandler = getHandlerWithType(VALID_HANDLER_NAME);
+        verify(selectedHandler).onCustomizeProgressDialog(any(ProgressDialog.class));
+    }
+
+    private void startActivityWithValidPlugin() {
+        startActivityWithIntentUrlPath("/" + VALID_PLUGIN_NAME + "/" + VALID_HANDLER_NAME);
     }
 
     private void startActivityWithIntentUrlPath(String path) {

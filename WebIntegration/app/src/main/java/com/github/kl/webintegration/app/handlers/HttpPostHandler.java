@@ -1,5 +1,6 @@
 package com.github.kl.webintegration.app.handlers;
 
+import android.app.ProgressDialog;
 import android.content.res.Resources;
 import android.util.Log;
 
@@ -107,6 +108,18 @@ public class HttpPostHandler extends ResultHandler {
                return entity;
            }
        };
+    }
+
+    @Override
+    public boolean isUsingProgressDialog() {
+        return true;
+    }
+
+    @Override
+    public void onCustomizeProgressDialog(ProgressDialog dialog) {
+        dialog.setIndeterminate(true);
+        dialog.setTitle("Posting data to server");
+        dialog.setMessage("Please wait...");
     }
 }
 

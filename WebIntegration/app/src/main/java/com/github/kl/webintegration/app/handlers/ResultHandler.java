@@ -1,5 +1,7 @@
 package com.github.kl.webintegration.app.handlers;
 
+import android.app.ProgressDialog;
+
 import com.github.kl.webintegration.app.ControllerActivity;
 
 import org.json.JSONObject;
@@ -30,6 +32,12 @@ public abstract class ResultHandler {
     public void addOnCompletedListener(HandlerCompletedListener listener) {
        completedListeners.add(listener);
     }
+
+    public boolean isUsingProgressDialog() {
+        return false;
+    }
+
+    public void onCustomizeProgressDialog(ProgressDialog dialog) {}
 
     public abstract void handlePluginNotFound(String pluginType);
 
