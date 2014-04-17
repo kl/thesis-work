@@ -15,6 +15,7 @@ class HttpsPostBox < Sinatra::Base
     message = json["message"]
 
     File.write(JSON_PATH, {data: message}.to_json)
+    status 200
   end
 end
 

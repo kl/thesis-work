@@ -12,7 +12,7 @@ set :current_message, nil
 JSON_PATH = File.join(settings.root, "android_data.json")
 
 get "/android" do
-  File.write(JSON_PATH, {data: nil}.to_json)  # clear the current message.
+  clear_current_message
   erb :main
 end
 
@@ -21,15 +21,23 @@ post "/android" do
   message = json["message"]
 
   File.write(JSON_PATH, {data: message}.to_json)
+  status 200
 end
 
 get "/appdata" do
   content_type :json
 
   data = JSON.parse(File.read(JSON_PATH))["data"]
+  clear_current_message
 
   response.headers['Access-Control-Allow-Origin'] = '*'
   {message: data}.to_json
+end
+
+helpers do
+  def clear_current_message
+    File.write(JSON_PATH, {data: nil}.to_json)
+  end
 end
 
 __END__
@@ -73,6 +81,7 @@ __END__
     <a href="app://web.android/SCANNER_ALL/HTTP_POST"       onclick="startPollingRemote()">All</a>
     <a href="app://web.android/CHEESE_GRATER/HTTP_POST"     onclick="startPollingRemote()">Non-existing</a>
     <a href="app://web.android/SCANNER_BARCODE/HTTP_SERVER" onclick="startPollingLocal()">Server test</a>
+    <a href="app://web.android/SCANNER_BARCODE/HTTPS_POST"   onclick="startPollingRemote()">Barcode HTTPS</a>
   </div>
   <hr/>
   <div id="message_list" />

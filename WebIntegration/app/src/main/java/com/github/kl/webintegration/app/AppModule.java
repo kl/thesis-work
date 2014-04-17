@@ -14,6 +14,7 @@ import com.github.kl.webintegration.app.controllers.ProductScanController;
 import com.github.kl.webintegration.app.controllers.QRScanController;
 import com.github.kl.webintegration.app.handlers.HttpPostHandler;
 import com.github.kl.webintegration.app.handlers.HttpServerHandler;
+import com.github.kl.webintegration.app.handlers.HttpsPostHandler;
 import com.github.kl.webintegration.app.handlers.ResultHandler;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -65,11 +66,12 @@ public class AppModule {
     @Provides @Singleton @Named("resultHandlers")
     Set<ResultHandler> provideResultHandlers(
             HttpPostHandler hph,
+            HttpsPostHandler hsph,
             HttpServerHandler hsh
     )
     {
         Set<ResultHandler> handlers = new HashSet<>();
-        handlers.addAll(Lists.newArrayList(hph, hsh));
+        handlers.addAll(Lists.newArrayList(hph, hsph, hsh));
         return handlers;
     }
 
