@@ -29,8 +29,6 @@ public class HttpPostHandler extends PostHandler {
 
     private static final String TYPE = "HTTP_POST";
 
-    @Inject Resources resources;
-
     @Inject
     public HttpPostHandler() {
         super(TYPE);
@@ -43,7 +41,7 @@ public class HttpPostHandler extends PostHandler {
     }
 
     private String getPostUrl() {
-        String IP   = "192.168.0.213";
+        String IP   = "192.168.0.224";
         String post = "android";
         int port    = 9000;
 

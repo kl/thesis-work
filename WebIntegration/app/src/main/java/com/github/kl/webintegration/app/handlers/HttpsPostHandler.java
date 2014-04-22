@@ -8,6 +8,8 @@ import com.github.kl.webintegration.app.R;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
 import javax.inject.Inject;
@@ -22,8 +24,6 @@ public class HttpsPostHandler extends PostHandler {
 
     private static final String TYPE = "HTTPS_POST";
 
-    @Inject Resources resources;
-
     @Inject
     public HttpsPostHandler() {
         super(TYPE);
@@ -37,18 +37,15 @@ public class HttpsPostHandler extends PostHandler {
     }
 
     private String getPostUrl() {
-        String IP   = "192.168.0.213";
+        String IP   = "192.168.0.224";
         String post = "android";
-        int port    = 9000;
+        int port    = 9100;
 
-        return "http://" + IP + ":" + port + "/" + post;
+        return "https://" + IP + ":" + port + "/" + post;
     }
 
-
-    // TODO: ughh...
-    private void disableHttpsCertificateChecks() {
+    private static void disableHttpsCertificateChecks() {
         try {
-
             TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                     return null;
@@ -59,8 +56,7 @@ public class HttpsPostHandler extends PostHandler {
 
                 public void checkServerTrusted(X509Certificate[] certs, String authType) {
                 }
-            }
-            };
+            }};
 
             // Install the all-trusting trust manager
             SSLContext sc = SSLContext.getInstance("SSL");
@@ -68,6 +64,7 @@ public class HttpsPostHandler extends PostHandler {
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
             // Create all-trusting host name verifier
+            
             HostnameVerifier allHostsValid = new HostnameVerifier() {
                 public boolean verify(String hostname, SSLSession session) {
                     return true;
@@ -77,7 +74,7 @@ public class HttpsPostHandler extends PostHandler {
             // Install the all-trusting host verifier
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException|KeyManagementException e) {
             throw new RuntimeException(e);
         }
     }
