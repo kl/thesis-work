@@ -5,7 +5,9 @@ import com.github.kl.webintegration.app.handlers.HttpServerHandler.ServerService
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.preference.PreferenceManager;
 
 import com.github.kl.webintegration.app.controllers.AllScanController;
 import com.github.kl.webintegration.app.controllers.BarcodeScanController;
@@ -48,7 +50,14 @@ public class AppModule {
      * {@link ForApplication @Annotation} to explicitly differentiate it from an activity context.
      */
     @Provides @Singleton @ForApplication
-    Context provideApplicationContext() { return application; }
+    Context provideApplicationContext() {
+        return application;
+    }
+
+    @Provides @Singleton @ForApplication
+    SharedPreferences provideApplicationSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(application);
+    }
 
     @Provides @Singleton @Named("pluginControllers")
     Set<PluginController> providePluginControllers(
@@ -85,7 +94,9 @@ public class AppModule {
     HttpClient provideHttpClient() { return new DefaultHttpClient(); }
 
     @Provides @Singleton
-    HttpServerHandler.Server provideServer() { return new HttpServerHandler.Server(9888); } // TODO: port to preference
+    HttpServerHandler.Server provideServer(Settings settings) {
+        return new HttpServerHandler.Server(settings.getLocalServerPort());
+    }
 }
 
 

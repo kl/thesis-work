@@ -3,7 +3,9 @@ package com.github.kl.webintegration.app.handlers;
 import android.content.res.Resources;
 import android.util.Log;
 
+import com.github.kl.webintegration.app.ForApplication;
 import com.github.kl.webintegration.app.R;
+import com.github.kl.webintegration.app.Settings;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -24,6 +26,8 @@ public class HttpsPostHandler extends PostHandler {
 
     private static final String TYPE = "HTTPS_POST";
 
+    @Inject Settings settings;
+
     @Inject
     public HttpsPostHandler() {
         super(TYPE);
@@ -37,9 +41,9 @@ public class HttpsPostHandler extends PostHandler {
     }
 
     private String getPostUrl() {
-        String IP   = "192.168.0.224";
+        String IP   = settings.getHttpsServerIP();
+        int port    = settings.getHttpsServerPort();
         String post = "android";
-        int port    = 9100;
 
         return "https://" + IP + ":" + port + "/" + post;
     }
@@ -64,7 +68,6 @@ public class HttpsPostHandler extends PostHandler {
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
             // Create all-trusting host name verifier
-            
             HostnameVerifier allHostsValid = new HostnameVerifier() {
                 public boolean verify(String hostname, SSLSession session) {
                     return true;

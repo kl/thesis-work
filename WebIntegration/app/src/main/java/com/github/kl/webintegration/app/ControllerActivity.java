@@ -1,14 +1,22 @@
 package com.github.kl.webintegration.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceFragment;
+import android.util.Log;
 
 import com.github.kl.webintegration.app.controllers.PluginController;
 import com.github.kl.webintegration.app.handlers.ResultHandler;
 import com.github.kl.webintegration.app.handlers.ResultHandler.HandlerCompletedListener;
+import com.google.common.base.CharMatcher;
+import com.google.common.collect.Range;
+
+import android.preference.Preference.OnPreferenceChangeListener;
 
 import org.json.JSONObject;
 
@@ -36,8 +44,24 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bootstrapInjection();
+        Intent intent = getIntent();
 
-        startPlugin(getIntent());
+        if (isStartedForPlugin(intent)) {
+            startPlugin(intent);
+        } else {
+            setSettingsFragment();
+        }
+    }
+
+    private boolean isStartedForPlugin(Intent intent) {
+        String scheme = intent.getScheme();
+        return scheme != null && scheme.equals("app");
+    }
+
+    private void setSettingsFragment() {
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new SettingsFragment())
+                .commit();
     }
 
     private void startPlugin(Intent intent) {
@@ -118,6 +142,8 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
             progressDialog.show();
         }
     }
+
+
 }
 
 

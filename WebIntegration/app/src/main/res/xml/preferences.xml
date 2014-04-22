@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_title_http_server_category">
+
+        <EditTextPreference android:key="@string/pref_key_http_server_ip"
+            android:title="@string/pref_title_http_server_ip"
+            android:summary="@string/pref_summary_http_server_ip"
+            android:defaultValue="@string/pref_default_http_server_ip"
+            android:digits="0123456789."
+            android:maxLength="15"
+            android:inputType="numberDecimal" />
+
+        <EditTextPreference android:key="@string/pref_key_http_server_port"
+            android:title="@string/pref_title_http_server_port"
+            android:summary="@string/pref_summary_http_server_port"
+            android:defaultValue="@string/pref_default_http_server_port"
+            android:maxLength="5"
+            android:inputType="number" />
+
+        <EditTextPreference android:key="@string/pref_key_http_server_post_path"
+            android:title="@string/pref_title_http_server_post_path"
+            android:summary="@string/pref_summary_http_server_post_path"
+            android:inputType="textNoSuggestions"
+            android:defaultValue="@string/pref_default_http_server_post_path" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_title_https_server_category">
+
+        <EditTextPreference android:key="@string/pref_key_https_server_ip"
+            android:title="@string/pref_title_https_server_ip"
+            android:summary="@string/pref_summary_https_server_ip"
+            android:defaultValue="@string/pref_default_https_server_ip"
+            android:digits="0123456789."
+            android:maxLength="15"
+            android:inputType="numberDecimal" />
+
+        <EditTextPreference android:key="@string/pref_key_https_server_port"
+            android:title="@string/pref_title_https_server_port"
+            android:summary="@string/pref_summary_https_server_port"
+            android:defaultValue="@string/pref_default_https_server_port"
+            android:maxLength="5"
+            android:inputType="number" />
+
+        <EditTextPreference android:key="@string/pref_key_https_server_post_path"
+            android:title="@string/pref_title_https_server_post_path"
+            android:summary="@string/pref_summary_https_server_post_path"
+            android:inputType="textNoSuggestions"
+            android:defaultValue="@string/pref_default_https_server_post_path" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_title_local_server_category">
+
+        <EditTextPreference android:key="@string/pref_key_local_server_port"
+            android:title="@string/pref_title_local_server_port"
+            android:summary="@string/pref_summary_local_server_port"
+            android:defaultValue="@string/pref_default_local_server_port"
+            android:maxLength="5"
+            android:inputType="number" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_title_protocol_category">
+
+        <EditTextPreference android:key="@string/pref_key_protocol_cancel_key"
+            android:title="@string/pref_title_protocol_cancel_key"
+            android:summary="@string/pref_summary_protocol_cancel_key"
+            android:defaultValue="@string/pref_default_protocol_cancel_key"
+            android:inputType="textNoSuggestions" />
+
+        <EditTextPreference android:key="@string/pref_key_protocol_cancel_value"
+            android:title="@string/pref_title_protocol_cancel_value"
+            android:summary="@string/pref_summary_protocol_cancel_value"
+            android:defaultValue="@string/pref_default_protocol_cancel_value"
+            android:inputType="textNoSuggestions" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
+
+
+
+

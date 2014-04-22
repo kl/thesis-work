@@ -93,7 +93,7 @@ function startPollingRemote() {
 }
 
 function startPollingLocal() {                         
-  performPoll("http://localhost:9888");
+  performPoll("http://localhost:9999");
 }
 
 function performPoll(url) {
