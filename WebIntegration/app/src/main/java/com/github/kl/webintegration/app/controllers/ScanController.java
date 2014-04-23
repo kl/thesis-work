@@ -13,6 +13,8 @@ import java.util.Map;
 
 public abstract class ScanController extends PluginController {
 
+    public static final String PLUGIN_RESULT_JSON_KEY = "plugin_result";
+
     public ScanController(String type, int requestCode) {
         super(type, requestCode);
     }
@@ -33,7 +35,7 @@ public abstract class ScanController extends PluginController {
     private void handleResultOk(Intent data, PluginResultHandler handler) {
         JSONObject jso = new JSONObject();
         try {
-            jso.put("message", data.getStringExtra("SCAN_RESULT"));
+            jso.put(PLUGIN_RESULT_JSON_KEY, data.getStringExtra("SCAN_RESULT"));
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

@@ -90,9 +90,6 @@ public class AppModule {
     @Provides @Singleton
     Resources provideResources() { return application.getResources(); }
 
-    @Provides
-    HttpClient provideHttpClient() { return new DefaultHttpClient(); }
-
     @Provides @Singleton
     HttpServerHandler.Server provideServer(Settings settings) {
         return new HttpServerHandler.Server(settings.getLocalServerPort());

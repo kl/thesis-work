@@ -3,6 +3,8 @@ package com.github.kl.webintegration.app.handlers;
 import android.app.ProgressDialog;
 import android.util.Log;
 
+import com.github.kl.webintegration.app.Settings;
+
 import org.apache.http.client.HttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,16 +21,7 @@ import static com.github.kl.webintegration.app.WebIntegrationApplication.LOG_TAG
 
 public abstract class PostHandler extends ResultHandler {
 
-    // TODO: change these fields to preferences
-    public static final String POST_CANCEL_KEY = "message";
-    public static final String POST_CANCEL_VALUE = "USER_CANCEL";
-    public static final String POST_CANCEL_TYPE_KEY = "type";
-
-    public static final String POST_NOT_FOUND_KEY = "message";
-    public static final String POST_NOT_FOUND_VALUE = "PLUGIN_NOT_FOUND";
-    public static final String POST_NOT_FOUND_TYPE_KEY = "type";
-
-    @Inject HttpClient httpClient;
+    @Inject Settings settings;
 
     public PostHandler(String type) {
         super(type);
@@ -45,8 +38,8 @@ public abstract class PostHandler extends ResultHandler {
     public void handlePluginNotFound(String pluginType) {
         JSONObject jso = new JSONObject();
         try {
-            jso.put(POST_NOT_FOUND_KEY, POST_NOT_FOUND_VALUE);
-            jso.put(POST_NOT_FOUND_TYPE_KEY, pluginType);
+            jso.put(settings.getPluginNotFoundKey(), settings.getPluginNotFoundValue());
+            jso.put(settings.getPluginTypeKey(), pluginType);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -58,8 +51,8 @@ public abstract class PostHandler extends ResultHandler {
     public void handleCancel(String pluginType) {
         JSONObject jso = new JSONObject();
         try {
-            jso.put(POST_CANCEL_KEY, POST_CANCEL_VALUE);
-            jso.put(POST_CANCEL_TYPE_KEY, pluginType);
+            jso.put(settings.getUserCancelKey(), settings.getUserCancelValue());
+            jso.put(settings.getPluginTypeKey(), pluginType);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

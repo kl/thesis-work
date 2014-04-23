@@ -70,12 +70,30 @@ public class SettingsFragment extends PreferenceFragment {
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             String ip = (String)newValue;
+
             if (ip.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}")) {
-                return true;
-            } else {
-                showValidationError(getString(R.string.pref_validation_wrong_ip));
-                return false;
+                String[] numbers = ip.split("\\.");
+                if (doesNotContainLeadingZeroes(numbers) &&
+                    eachNumberIsBetween0And255Inclusive(numbers)) return true;
             }
+
+            showValidationError(getString(R.string.pref_validation_wrong_ip));
+            return false;
+        }
+
+        private boolean doesNotContainLeadingZeroes(String[] numbers) {
+            for (String num : numbers) {
+                if (num.matches("(0\\d\\d)|(00\\d)|(000)|(0\\d)")) return false;
+            }
+            return true;
+        }
+
+        private boolean eachNumberIsBetween0And255Inclusive(String[] numbers) {
+            for (String stringNum : numbers) {
+                int num = Integer.parseInt(stringNum);
+                if (num < 0 || num > 255) return false;
+            }
+            return true;
         }
     }
 

@@ -65,6 +65,12 @@
 
     <PreferenceCategory android:title="@string/pref_title_protocol_category">
 
+        <EditTextPreference android:key="@string/pref_key_protocol_plugin_type_key"
+            android:title="@string/pref_title_protocol_plugin_type_key"
+            android:summary="@string/pref_summary_protocol_plugin_type_key"
+            android:defaultValue="@string/pref_default_protocol_plugin_type_key"
+            android:inputType="textNoSuggestions" />
+
         <EditTextPreference android:key="@string/pref_key_protocol_cancel_key"
             android:title="@string/pref_title_protocol_cancel_key"
             android:summary="@string/pref_summary_protocol_cancel_key"
@@ -75,6 +81,18 @@
             android:title="@string/pref_title_protocol_cancel_value"
             android:summary="@string/pref_summary_protocol_cancel_value"
             android:defaultValue="@string/pref_default_protocol_cancel_value"
+            android:inputType="textNoSuggestions" />
+
+        <EditTextPreference android:key="@string/pref_key_protocol_not_found_key"
+            android:title="@string/pref_title_protocol_not_found_key"
+            android:summary="@string/pref_summary_protocol_not_found_key"
+            android:defaultValue="@string/pref_default_protocol_not_found_key"
+            android:inputType="textNoSuggestions" />
+
+        <EditTextPreference android:key="@string/pref_key_protocol_not_found_value"
+            android:title="@string/pref_title_protocol_not_found_value"
+            android:summary="@string/pref_summary_protocol_not_found_value"
+            android:defaultValue="@string/pref_default_protocol_not_found_value"
             android:inputType="textNoSuggestions" />
 
     </PreferenceCategory>

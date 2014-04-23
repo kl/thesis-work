@@ -3,8 +3,10 @@ package com.github.kl.webintegration.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import javax.annotation.concurrent.ThreadSafe;
 import javax.inject.Inject;
 
+@ThreadSafe
 public class Settings {
 
     @Inject @ForApplication Context context;
@@ -33,6 +35,26 @@ public class Settings {
         return Integer.parseInt(port);
     }
 
+    public String getPluginTypeKey() {
+        return readValue(R.string.pref_key_protocol_plugin_type_key);
+    }
+
+    public String getUserCancelKey() {
+        return readValue(R.string.pref_key_protocol_cancel_key);
+    }
+
+    public String getUserCancelValue() {
+        return readValue(R.string.pref_key_protocol_cancel_value);
+    }
+
+    public String getPluginNotFoundKey() {
+        return readValue(R.string.pref_key_protocol_not_found_key);
+    }
+
+    public String getPluginNotFoundValue() {
+        return readValue(R.string.pref_key_protocol_not_found_value);
+    }
+
     private String readValue(int prefKeyId) {
         String key = context.getString(prefKeyId);
         String value = sharedPreferences.getString(key, null);
@@ -40,4 +62,22 @@ public class Settings {
         return value;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

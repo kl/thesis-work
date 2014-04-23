@@ -2,4 +2,6 @@
     <string name="app_name">WebIntegration</string>
     <string name="post_progress_dialog_title">Posting data to server</string>
     <string name="post_progress_dialog_message">Please wait...</string>
+    <string name="pref_validation_ok">OK</string>
+    <string name="pref_validation_wrong_ip">The IP address must be in valid dotted decimal form</string>
 </resources>
