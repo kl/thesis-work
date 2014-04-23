@@ -3,20 +3,14 @@ package com.github.kl.webintegration.app;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.util.Log;
 
 import com.github.kl.webintegration.app.controllers.PluginController;
 import com.github.kl.webintegration.app.handlers.ResultHandler;
 import com.github.kl.webintegration.app.handlers.ResultHandler.HandlerCompletedListener;
-import com.google.common.base.CharMatcher;
-import com.google.common.collect.Range;
-
-import android.preference.Preference.OnPreferenceChangeListener;
 
 import org.json.JSONObject;
 
@@ -131,8 +125,39 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
 
     @Override
     public void onHandlerCompleted() {
-        if (progressDialog != null) progressDialog.dismiss();
+        dismissProgressDialog();
         finish();
+    }
+
+    @Override
+    public void onHandlerError(String errorMessage) {
+        dismissProgressDialog();
+        postErrorMessage(errorMessage);
+    }
+
+    private void postErrorMessage(final String errorMessage) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showErrorMesssage(errorMessage);
+            }
+        });
+    }
+
+    private void showErrorMesssage(String errorMessage) {
+        if (isFinishing()) return;
+        new AlertDialog.Builder(this)
+                    .setMessage(errorMessage)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override public void onClick(DialogInterface di, int i) {
+                            finish();
+                        }})
+                    .create()
+                    .show();
+    }
+
+    private void dismissProgressDialog() {
+        if (progressDialog != null) progressDialog.dismiss();
     }
 
     private void handleProgressDialog() {
@@ -142,8 +167,6 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
             progressDialog.show();
         }
     }
-
-
 }
 
 

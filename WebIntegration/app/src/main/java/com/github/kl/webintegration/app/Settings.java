@@ -61,6 +61,11 @@ public class Settings {
         if (value == null) throw new RuntimeException("Error reading key from SharedPreferences");
         return value;
     }
+
+    public int getLocalServerTimeoutMs() {
+        int timeoutSeconds = Integer.parseInt(readValue(R.string.pref_key_local_server_timeout));
+        return timeoutSeconds * 1000;
+    }
 }
 
 

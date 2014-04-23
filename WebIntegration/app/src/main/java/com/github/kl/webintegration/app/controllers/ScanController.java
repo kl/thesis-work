@@ -13,7 +13,7 @@ import java.util.Map;
 
 public abstract class ScanController extends PluginController {
 
-    public static final String PLUGIN_RESULT_JSON_KEY = "plugin_result";
+    public static final String PLUGIN_RESULT_JSON_KEY = "message";
 
     public ScanController(String type, int requestCode) {
         super(type, requestCode);

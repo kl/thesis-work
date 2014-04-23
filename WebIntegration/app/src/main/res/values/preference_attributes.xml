@@ -43,11 +43,17 @@
     <string name="pref_summary_https_server_post_path">The server path (without a leading \'/\') that should be posted to</string>
     <string name="pref_default_https_server_post_path">android</string>
 
-    <!-- Local server -->
+    <!-- Local server port -->
     <string name="pref_key_local_server_port">local_server_port</string>
     <string name="pref_title_local_server_port">Port</string>
     <string name="pref_summary_local_server_port">The local server port</string>
     <string name="pref_default_local_server_port">9999</string>
+
+    <!-- Local server timeout -->
+    <string name="pref_key_local_server_timeout">local_server_timeout</string>
+    <string name="pref_title_local_server_timeout">Timeout</string>
+    <string name="pref_summary_local_server_timeout">How many seconds the local server should wait for a request before terminating</string>
+    <string name="pref_default_local_server_timeout">5</string>
 
     <!-- JSON: Plugin type key -->
     <string name="pref_key_protocol_plugin_type_key">protocol_plugin_type_key</string>

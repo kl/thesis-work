@@ -61,6 +61,13 @@
             android:maxLength="5"
             android:inputType="number" />
 
+        <EditTextPreference android:key="@string/pref_key_local_server_timeout"
+            android:title="@string/pref_title_local_server_timeout"
+            android:summary="@string/pref_summary_local_server_timeout"
+            android:defaultValue="@string/pref_default_local_server_timeout"
+            android:maxLength="2"
+            android:inputType="number" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_title_protocol_category">

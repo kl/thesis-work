@@ -27,11 +27,12 @@ public class SettingsFragment extends PreferenceFragment {
     }
 
     private void setupValidation() {
-        addValidator(R.string.pref_key_http_server_ip,    new DottedDecimalIPValidator());
-        addValidator(R.string.pref_key_http_server_port,  new PortValidator(MIN_PORT_PRIVELEDGED, MAX_PORT));
-        addValidator(R.string.pref_key_https_server_ip,   new DottedDecimalIPValidator());
-        addValidator(R.string.pref_key_https_server_port, new PortValidator(MIN_PORT_PRIVELEDGED, MAX_PORT));
-        addValidator(R.string.pref_key_local_server_port, new PortValidator(MIN_PORT, MAX_PORT));
+        addValidator(R.string.pref_key_http_server_ip,       new DottedDecimalIPValidator());
+        addValidator(R.string.pref_key_http_server_port,     new PortValidator(MIN_PORT_PRIVELEDGED, MAX_PORT));
+        addValidator(R.string.pref_key_https_server_ip,      new DottedDecimalIPValidator());
+        addValidator(R.string.pref_key_https_server_port,    new PortValidator(MIN_PORT_PRIVELEDGED, MAX_PORT));
+        addValidator(R.string.pref_key_local_server_port,    new PortValidator(MIN_PORT, MAX_PORT));
+        addValidator(R.string.pref_key_local_server_timeout, new LocalServerTimeoutValidator());
     }
 
     private void addValidator(int preferenceKey, Preference.OnPreferenceChangeListener listener) {
@@ -97,6 +98,19 @@ public class SettingsFragment extends PreferenceFragment {
         }
     }
 
+    private class LocalServerTimeoutValidator implements OnPreferenceChangeListener {
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            int timeout = Integer.parseInt((String)newValue);
+            if (timeout <= 0) {
+                showValidationError("Timeout must be greater than 0");
+                return false;
+            }
+            return true;
+        }
+    }
+
     private void showValidationError(final String message) {
         final Activity activity = getActivity();
         if (activity == null) throw new RuntimeException("SettingsFragment parent activity is null");
@@ -104,6 +118,7 @@ public class SettingsFragment extends PreferenceFragment {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if (activity.isFinishing()) return;
                 new AlertDialog.Builder(activity)
                         .setMessage(message)
                         .setPositiveButton(R.string.pref_validation_ok, new DialogInterface.OnClickListener() {

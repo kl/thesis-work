@@ -18,6 +18,10 @@ public abstract class ResultHandler {
         for (HandlerCompletedListener l : completedListeners) l.onHandlerCompleted();
     }
 
+    protected void notifyHandlerError(String errorMessage) {
+        for (HandlerCompletedListener l : completedListeners) l.onHandlerError(errorMessage);
+    }
+
     private String type;
 
     public ResultHandler(String type) {
@@ -47,5 +51,6 @@ public abstract class ResultHandler {
 
     public static interface HandlerCompletedListener {
         public void onHandlerCompleted();
+        public void onHandlerError(String errorMessage);
     }
 }

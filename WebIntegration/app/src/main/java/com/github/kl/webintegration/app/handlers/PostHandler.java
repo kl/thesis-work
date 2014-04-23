@@ -70,7 +70,7 @@ public abstract class PostHandler extends ResultHandler {
                     notifyHandlerComplete();
                 } catch (IOException e) {
                     Log.e(LOG_TAG, e.getMessage());
-                    notifyHandlerComplete(); // TODO: make error callback here
+                    notifyHandlerError("Server communication error: " + e.getMessage());
                 }
             }
         }).start();

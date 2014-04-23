@@ -4,4 +4,5 @@
     <string name="post_progress_dialog_message">Please wait...</string>
     <string name="pref_validation_ok">OK</string>
     <string name="pref_validation_wrong_ip">The IP address must be in valid dotted decimal form</string>
+    <string name="local_server_timeout">Error: the local server did not receive a call within the timeout window</string>
 </resources>
