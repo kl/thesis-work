@@ -12,7 +12,7 @@ class HttpsPostBox < Sinatra::Base
 
   post "/android" do
     json = JSON.parse(request.body.read)
-    message = json["message"]
+    message = json["plugin_result"]
 
     File.write(JSON_PATH, {data: message}.to_json)
     status 200
