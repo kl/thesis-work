@@ -19,6 +19,10 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="app" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.github.kl.webintegration.app.SettingsActivity"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
