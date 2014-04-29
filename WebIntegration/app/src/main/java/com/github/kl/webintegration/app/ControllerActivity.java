@@ -27,19 +27,18 @@ import javax.inject.Named;
 
 import static com.github.kl.webintegration.app.WebIntegrationApplication.LOG_TAG;
 
-public class ControllerActivity extends Activity implements PluginResultHandler, HandlerCompletedListener {
+public class ControllerActivity extends Activity implements PluginResultListener, HandlerCompletedListener {
 
-    private static final String TAG_STATE_FRAGMENT = "state_fragment";
-    private static final String TAG_ERROR_FRAGMENT = "error_fragment";
+    private static final String TAG_STATE_FRAGMENT    = "state_fragment";
+    private static final String TAG_ERROR_FRAGMENT    = "error_fragment";
+    private static final String TAG_PROGRESS_FRAGMENT = "progress_fragment";
 
     @Inject @Named("pluginControllers") Set<PluginController> pluginControllers;
     @Inject @Named("resultHandlers")    Set<ResultHandler>    resultHandlers;
-    @Inject ProgressDialogFactory progressDialogFactory;
 
-    private PluginController    controller;
-    private ResultHandler       handler;
-    private ProgressDialog      progressDialog;
-    private StateFragment       stateFragment;
+    private PluginController controller;
+    private ResultHandler    handler;
+    private StateFragment    stateFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,10 +52,16 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
             stateFragment = new StateFragment();
             fm.beginTransaction().add(stateFragment, TAG_STATE_FRAGMENT).commit();
             startPlugin(getIntent());
-            retainState();
         } else {
-            restoreState();
+            restoreRetainedState();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (controller != null) controller.removePluginResultListener(this);
+        if (handler != null) handler.removeOnCompletedListener(this);
     }
 
     private void bootstrapInjection() {
@@ -64,31 +69,39 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
     }
 
     private void startPlugin(Intent intent) {
-        String pluginType = getPluginType(intent);
+        String pluginType  = getPluginType(intent);
         String handlerType = getHandlerType(intent);
 
         handler = findResultHandler(handlerType);
-        if (handler == null) finish();
-        handler.addOnCompletedListener(this);
+        if (handler != null) {
+            stateFragment.resultHandler = handler;
+            handler.addOnCompletedListener(this);
+        } else {
+            finish();
+        }
 
         controller = findPluginController(pluginType);
         if (controller != null) {
+            stateFragment.pluginController = controller;
+            controller.addPluginResultListener(this);
             startActivityForResult(controller.getPluginIntent(), controller.getRequestCode());
         } else {
             handler.handlePluginNotFound(pluginType);
         }
     }
 
-    private void restoreState() {
-        Log.d(LOG_TAG, "restoreState");
-        handler    = stateFragment.resultHandler;
+    private void restoreRetainedState() {
+        Log.d(LOG_TAG, "restoreRetainedState");
         controller = stateFragment.pluginController;
-    }
+        handler = stateFragment.resultHandler;
 
-    private void retainState() {
-        Log.d(LOG_TAG, "retainState");
-        stateFragment.resultHandler = handler;
-        stateFragment.pluginController = controller;
+        controller.addPluginResultListener(this);
+        handler.addOnCompletedListener(this);
+
+        if (stateFragment.retainedErrorMessage != null) {
+            postErrorMessage(stateFragment.retainedErrorMessage);
+            stateFragment.retainedErrorMessage = null;
+        }
     }
 
     private String getPluginType(Intent intent) {
@@ -122,72 +135,81 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(LOG_TAG, "onActivityResult");
-        controller.onActivityResult(requestCode, resultCode, data, this);
+        controller.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onPluginResult(JSONObject result, PluginController controller) {
+        Log.d(LOG_TAG, "onPluginResult");
         handleProgressDialog();
         handler.handleResult(result);
     }
 
     @Override
     public void onPluginCancel(PluginController controller) {
+        Log.d(LOG_TAG, "onPluginCancel");
         handleProgressDialog();
         handler.handleCancel(controller.getType());
     }
 
+    private void handleProgressDialog() {
+        if (handler.isUsingProgressDialog()) {
+            Bundle options = new Bundle();
+            handler.onCustomizeProgressDialog(options);
+
+            ProgressDialogFragment progressFragment = ProgressDialogFragment.newInstance(options);
+            progressFragment.show(getFragmentManager(), TAG_PROGRESS_FRAGMENT);
+        }
+    }
+
     @Override
     public void onHandlerCompleted() {
-        dismissProgressDialog();
+        Log.d(LOG_TAG, "onHandlerCompleted");
+        dismissDialogFragment(TAG_PROGRESS_FRAGMENT);
         finish();
     }
 
     @Override
     public void onHandlerError(String errorMessage) {
-        dismissProgressDialog();
+        Log.d(LOG_TAG, "onHandlerError");
+        dismissDialogFragment(TAG_PROGRESS_FRAGMENT);
         postErrorMessage(errorMessage);
     }
 
     private void postErrorMessage(final String errorMessage) {
         runOnUiThread(new Runnable() {
+
             @Override
             public void run() {
-                showErrorMesssage(errorMessage);
+                if (isChangingConfigurations()) {
+                    stateFragment.retainedErrorMessage = errorMessage;
+                    return;
+                }
+                if (isFinishing()) return;
+
+                ErrorDialogFragment errorFragment = ErrorDialogFragment.newInstance(errorMessage);
+                errorFragment.show(getFragmentManager(), TAG_ERROR_FRAGMENT);
             }
         });
     }
 
-    private void showErrorMesssage(String errorMessage) {
-        if (isFinishing()) return;
-        ErrorDialogFragment errorFragment = ErrorDialogFragment.newInstance(errorMessage);
-        errorFragment.show(getFragmentManager(), TAG_ERROR_FRAGMENT);
-    }
-
-    private void dismissProgressDialog() {
-        if (progressDialog != null) progressDialog.dismiss();
-    }
-
-    private void handleProgressDialog() {
-        if (handler.isUsingProgressDialog()) {
-            progressDialog = progressDialogFactory.newProgressDialog(this);
-            handler.onCustomizeProgressDialog(progressDialog);
-            progressDialog.show();
-        }
-    }
-
     private void onErrorDialogFinish() {
-        FragmentManager fm = getFragmentManager();
-        ErrorDialogFragment edf = (ErrorDialogFragment)fm.findFragmentByTag(TAG_ERROR_FRAGMENT);
-        if (edf != null) edf.dismiss();
+        dismissDialogFragment(TAG_ERROR_FRAGMENT);
         finish();
+    }
+
+    private void dismissDialogFragment(String dialogFragmentTag) {
+        FragmentManager fm = getFragmentManager();
+        DialogFragment dialogFragment = (DialogFragment)fm.findFragmentByTag(dialogFragmentTag);
+        if (dialogFragment != null) dialogFragment.dismiss();
     }
 
     private static class StateFragment extends Fragment {
 
-        // The following objects need to be retained across configuration changes
+        // These objects need to be retained across configuration changes
         PluginController pluginController;
         ResultHandler resultHandler;
+        String retainedErrorMessage;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -196,14 +218,12 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
         }
     }
 
-    public static class ErrorDialogFragment extends DialogFragment {
+    public static class ProgressDialogFragment extends DialogFragment {
 
-        public static ErrorDialogFragment newInstance(String message) {
-            ErrorDialogFragment dialog = new ErrorDialogFragment();
-            Bundle args = new Bundle();
-            args.putString("message", message);
-            dialog.setArguments(args);
-            return dialog;
+        public static ProgressDialogFragment newInstance(Bundle options) {
+            ProgressDialogFragment fragment = new ProgressDialogFragment();
+            fragment.setArguments(options);
+            return fragment;
         }
 
         @Override
@@ -211,8 +231,38 @@ public class ControllerActivity extends Activity implements PluginResultHandler,
             final ControllerActivity activity = (ControllerActivity)getActivity();
             if (activity == null) throw new RuntimeException("getActivity returned null");
 
+            Bundle options = getArguments();
+            if (options == null) throw new RuntimeException("setArguments not called");
+
+            ProgressDialog dialog = new ProgressDialog(activity);
+            dialog.setIndeterminate(options.getBoolean("indeterminate", true));
+            dialog.setTitle(options.getString("title", "Result Handler"));
+            dialog.setMessage(options.getString("message", "Loading..."));
+            return dialog;
+        }
+    }
+
+    public static class ErrorDialogFragment extends DialogFragment {
+
+        public static ErrorDialogFragment newInstance(String message) {
+            ErrorDialogFragment fragment = new ErrorDialogFragment();
+            Bundle args = new Bundle();
+            args.putString("message", message);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final ControllerActivity activity = (ControllerActivity)getActivity();
+            if (activity == null) throw new RuntimeException("getActivity returned null");
+
+            Bundle options = getArguments();
+            if (options == null) throw new RuntimeException("setArguments not called");
+
             return new AlertDialog.Builder(activity)
-                    .setMessage(getArguments().getString("message"))
+                    .setMessage(options.getString("message"))
+                    .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface di, int i) {

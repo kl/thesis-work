@@ -1,6 +1,7 @@
 package com.github.kl.webintegration.app.handlers;
 
 import android.app.ProgressDialog;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.github.kl.webintegration.app.Settings;
@@ -66,6 +67,11 @@ public abstract class PostHandler extends ResultHandler {
             @Override
             public void run() {
                 try {
+                    try {
+                        Thread.sleep(7000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     performPost(postData);
                     notifyHandlerComplete();
                 } catch (IOException e) {
@@ -103,9 +109,9 @@ public abstract class PostHandler extends ResultHandler {
     }
 
     @Override
-    public void onCustomizeProgressDialog(ProgressDialog dialog) {
-        dialog.setIndeterminate(true);
-        dialog.setTitle("Posting data to server");
-        dialog.setMessage("Please wait...");
+    public void onCustomizeProgressDialog(Bundle bundle) {
+        bundle.putBoolean("indeterminate", true);
+        bundle.putString("title", "Posting data to server");
+        bundle.putString("message", "Please wait...");
     }
 }

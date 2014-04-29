@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
-public interface PluginResultHandler {
+public interface PluginResultListener {
     public void onPluginResult(JSONObject result, PluginController pluginController);
 
     void onPluginCancel(PluginController pluginController);

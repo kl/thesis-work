@@ -39,7 +39,8 @@ import static com.github.kl.webintegration.app.WebIntegrationApplication.LOG_TAG
  * notifyHandlerComplete until a request has been served. The reason this is not done is that the
  * standard Android web browser pauses all AJAX calls when the browser is not the current activity.
  * So for the AJAX request to come in the the server, the current main activity
- * (which is ControllerActivity) must be popped from the back stack (i.e. it must exit).
+ * (which is ControllerActivity) must be popped from the back stack (i.e. it must exit), so that
+ * the web browser can become the active activity.
  */
 public class HttpServerHandler extends ResultHandler {
 
