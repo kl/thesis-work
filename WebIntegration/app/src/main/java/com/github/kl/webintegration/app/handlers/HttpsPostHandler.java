@@ -41,13 +41,12 @@ public class HttpsPostHandler extends PostHandler {
     }
 
     private String getPostUrl() {
-        String IP   = settings.getHttpsServerIP();
-        int port    = settings.getHttpsServerPort();
-        String post = "android";
-
-        return "https://" + IP + ":" + port + "/" + post;
+        return "http://" + settings.getHttpsServerIP() +
+                ":"      + settings.getHttpsServerPort() +
+                "/"      + settings.getHttpsServerPostPath();
     }
 
+    // For testing only
     private static void disableHttpsCertificateChecks() {
         try {
             TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {

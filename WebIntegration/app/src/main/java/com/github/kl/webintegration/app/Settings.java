@@ -21,6 +21,10 @@ public class Settings {
         return Integer.parseInt(port);
     }
 
+    public String getHttpServerPostPath() {
+        return readValue(R.string.pref_key_http_server_post_path);
+    }
+
     public String getHttpsServerIP() {
         return readValue(R.string.pref_key_https_server_ip);
     }
@@ -28,6 +32,10 @@ public class Settings {
     public int getHttpsServerPort() {
         String port = readValue(R.string.pref_key_https_server_port);
         return Integer.parseInt(port);
+    }
+
+    public String getHttpsServerPostPath() {
+        return readValue(R.string.pref_key_https_server_post_path);
     }
 
     public int getLocalServerPort() {

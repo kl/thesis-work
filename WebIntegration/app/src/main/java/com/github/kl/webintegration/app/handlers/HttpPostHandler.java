@@ -32,11 +32,9 @@ public class HttpPostHandler extends PostHandler {
     }
 
     private String getPostUrl() {
-        String IP   = settings.getHttpServerIP();
-        int port    = settings.getHttpServerPort();
-        String post = "android";
-
-        return "http://" + IP + ":" + port + "/" + post;
+        return "http://" + settings.getHttpServerIP() +
+                ":"      + settings.getHttpServerPort() +
+                "/"      + settings.getHttpServerPostPath();
     }
 }
 
