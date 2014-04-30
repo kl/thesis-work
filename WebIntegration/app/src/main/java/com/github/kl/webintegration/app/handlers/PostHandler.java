@@ -24,6 +24,8 @@ public abstract class PostHandler extends ResultHandler {
 
     @Inject Settings settings;
 
+    private Thread postThread;
+
     public PostHandler(String type) {
         super(type);
     }
@@ -61,24 +63,33 @@ public abstract class PostHandler extends ResultHandler {
         post(jso);
     }
 
+    @Override
+    public void onUserCancel() {
+        if (postThread == null) return;
+        postThread.interrupt();
+    }
+
     private void post(final JSONObject postData) {
-        new Thread(new Runnable() {
+        postThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try {
                     int code = performPost(postData);
+                    if (Thread.interrupted()) return;
                     if (isResultCodeOK(code)) {
                         notifyHandlerComplete();
                     } else {
                         notifyHandlerError("Server did not return 200 OK. Code was: " + code);
                     }
                 } catch (IOException e) {
+                    if (Thread.interrupted()) return;
                     Log.e(LOG_TAG, e.getMessage());
                     notifyHandlerError("Server communication error: " + e.getMessage());
                 }
             }
-        }).start();
+        });
+        postThread.start();
     }
 
     private boolean isResultCodeOK(int code) {

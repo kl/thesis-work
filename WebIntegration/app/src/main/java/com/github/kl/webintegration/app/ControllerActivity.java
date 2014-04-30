@@ -158,6 +158,7 @@ public class ControllerActivity extends Activity implements PluginResultListener
             handler.onCustomizeProgressDialog(options);
 
             ProgressDialogFragment progressFragment = ProgressDialogFragment.newInstance(options);
+            progressFragment.setCancelable(false);
             progressFragment.show(getFragmentManager(), TAG_PROGRESS_FRAGMENT);
         }
     }
@@ -188,6 +189,7 @@ public class ControllerActivity extends Activity implements PluginResultListener
                 if (isFinishing()) return;
 
                 ErrorDialogFragment errorFragment = ErrorDialogFragment.newInstance(errorMessage);
+                errorFragment.setCancelable(false);
                 errorFragment.show(getFragmentManager(), TAG_ERROR_FRAGMENT);
             }
         });
@@ -195,6 +197,12 @@ public class ControllerActivity extends Activity implements PluginResultListener
 
     private void onErrorDialogFinish() {
         dismissDialogFragment(TAG_ERROR_FRAGMENT);
+        finish();
+    }
+
+    private void onProgressDialogCancel() {
+        dismissDialogFragment(TAG_PROGRESS_FRAGMENT);
+        handler.onUserCancel();
         finish();
     }
 
@@ -238,6 +246,12 @@ public class ControllerActivity extends Activity implements PluginResultListener
             dialog.setIndeterminate(options.getBoolean("indeterminate", true));
             dialog.setTitle(options.getString("title", "Result Handler"));
             dialog.setMessage(options.getString("message", "Loading..."));
+            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    activity.onProgressDialogCancel();
+                }
+            });
             return dialog;
         }
     }
@@ -262,10 +276,9 @@ public class ControllerActivity extends Activity implements PluginResultListener
 
             return new AlertDialog.Builder(activity)
                     .setMessage(options.getString("message"))
-                    .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface di, int i) {
+                        public void onClick(DialogInterface dialog, int which) {
                             activity.onErrorDialogFinish();
                         }
                     })

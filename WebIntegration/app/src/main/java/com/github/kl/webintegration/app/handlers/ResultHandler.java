@@ -53,6 +53,8 @@ public abstract class ResultHandler {
 
     public abstract void handleCancel(String type);
 
+    public abstract void onUserCancel();
+
     public static interface HandlerCompletedListener {
         public void onHandlerCompleted();
         public void onHandlerError(String errorMessage);
