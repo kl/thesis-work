@@ -67,19 +67,22 @@ public abstract class PostHandler extends ResultHandler {
             @Override
             public void run() {
                 try {
-                    try {
-                        Thread.sleep(7000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    int code = performPost(postData);
+                    if (isResultCodeOK(code)) {
+                        notifyHandlerComplete();
+                    } else {
+                        notifyHandlerError("Server did not return 200 OK. Code was: " + code);
                     }
-                    performPost(postData);
-                    notifyHandlerComplete();
                 } catch (IOException e) {
                     Log.e(LOG_TAG, e.getMessage());
                     notifyHandlerError("Server communication error: " + e.getMessage());
                 }
             }
         }).start();
+    }
+
+    private boolean isResultCodeOK(int code) {
+        return code >= 200 && code < 300;
     }
 
     private int performPost(final JSONObject postData) throws IOException {
