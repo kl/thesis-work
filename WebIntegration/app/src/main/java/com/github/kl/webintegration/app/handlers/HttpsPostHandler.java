@@ -41,9 +41,9 @@ public class HttpsPostHandler extends PostHandler {
     }
 
     private String getPostUrl() {
-        return "http://" + settings.getHttpsServerIP() +
-                ":"      + settings.getHttpsServerPort() +
-                "/"      + settings.getHttpsServerPostPath();
+        return "https://" + settings.getHttpsServerIP() +
+                ":"       + settings.getHttpsServerPort() +
+                "/"       + settings.getHttpsServerPostPath();
     }
 
     // For testing only
