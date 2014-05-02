@@ -74,6 +74,15 @@ public class Settings {
         int timeoutSeconds = Integer.parseInt(readValue(R.string.pref_key_local_server_timeout));
         return timeoutSeconds * 1000;
     }
+
+    public boolean getSystemPluginsEnabled() {
+        String key = context.getString(R.string.pref_key_other_system_plugins_enabled);
+        return sharedPreferences.getBoolean(key, false);
+    }
+
+    public String getPluginIntentAction() {
+        return readValue(R.string.pref_key_other_intent_action);
+    }
 }
 
 

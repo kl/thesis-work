@@ -7,21 +7,29 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.github.kl.webintegration.app.controllers.PluginController;
+import com.github.kl.webintegration.app.controllers.SystemPluginController;
 import com.github.kl.webintegration.app.handlers.ResultHandler;
 import com.github.kl.webintegration.app.handlers.ResultHandler.HandlerCompletedListener;
+import com.google.common.base.Preconditions;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -35,6 +43,9 @@ public class ControllerActivity extends Activity implements PluginResultListener
 
     @Inject @Named("pluginControllers") Set<PluginController> pluginControllers;
     @Inject @Named("resultHandlers")    Set<ResultHandler>    resultHandlers;
+
+    @Inject Settings settings;
+    @Inject SystemPluginController systemPluginController;
 
     private PluginController controller;
     private ResultHandler    handler;
@@ -69,8 +80,10 @@ public class ControllerActivity extends Activity implements PluginResultListener
     }
 
     private void startPlugin(Intent intent) {
-        String pluginType  = getPluginType(intent);
         String handlerType = getHandlerType(intent);
+        String pluginType  = getPluginType(intent);
+
+        systemPluginController.setPluginIntent(pluginType);
 
         handler = findResultHandler(handlerType);
         if (handler != null) {
@@ -86,6 +99,7 @@ public class ControllerActivity extends Activity implements PluginResultListener
             controller.addPluginResultListener(this);
             startActivityForResult(controller.getPluginIntent(), controller.getRequestCode());
         } else {
+            handleProgressDialog();
             handler.handlePluginNotFound(pluginType);
         }
     }
@@ -129,7 +143,19 @@ public class ControllerActivity extends Activity implements PluginResultListener
         for (PluginController controller : pluginControllers) {
             if (controller.getType().equals(pluginType)) return controller;
         }
-        return null;
+        if (settings.getSystemPluginsEnabled() &&
+            isIntentAvailable(systemPluginController.getPluginIntent())) {
+            return systemPluginController;
+        } else {
+            return null;
+        }
+    }
+
+    private boolean isIntentAvailable(Intent intent) {
+        PackageManager pm = getPackageManager();
+        assert pm != null;
+        List<ResolveInfo> list = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
     }
 
     @Override

@@ -104,7 +104,28 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/pref_title_other_category">
+
+        <SwitchPreference android:key="@string/pref_key_other_system_plugins_enabled"
+            android:title="@string/pref_title_other_system_plugins_enabled"
+            android:summary="@string/pref_summary_other_system_plugins_enabled"
+            android:defaultValue="@string/pref_default_other_system_plugins_enabled" />
+
+        <EditTextPreference android:key="@string/pref_key_other_intent_category"
+            android:title="@string/pref_title_other_intent_category"
+            android:summary="@string/pref_summary_other_intent_category"
+            android:defaultValue="@string/pref_default_other_intent_category"
+            android:inputType="textNoSuggestions" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
+
+
+
+
+
+
 
 
 

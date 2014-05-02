@@ -6,6 +6,7 @@
     <string name="pref_title_http_server_category">HTTP SERVER SETTINGS</string>
     <string name="pref_title_local_server_category">LOCAL SERVER SETTINGS</string>
     <string name="pref_title_protocol_category">PROTOCOL SETTINGS</string>
+    <string name="pref_title_other_category">OTHER</string>
 
     <!-- HTTP server IP -->
     <string name="pref_title_http_server_ip">IP</string>
@@ -84,6 +85,18 @@
     <string name="pref_title_protocol_not_found_value">Plugin not found value</string>
     <string name="pref_summary_protocol_not_found_value">The JSON value that is used if the plugin is not found</string>
     <string name="pref_default_protocol_not_found_value">plugin_not_found</string>
+
+    <!-- System plugins enabled -->
+    <string name="pref_key_other_system_plugins_enabled">system_plugins_enabled</string>
+    <string name="pref_title_other_system_plugins_enabled">System Plugins</string>
+    <string name="pref_summary_other_system_plugins_enabled">If system plugins should be resolved</string>
+    <string name="pref_default_other_system_plugins_enabled">false</string>
+
+    <!-- System plugin Intent action -->
+    <string name="pref_key_other_intent_category">other_intent_category</string>
+    <string name="pref_title_other_intent_category">System plugin Intent category</string>
+    <string name="pref_summary_other_intent_category">The Intent category that is used for system plugin resolution</string>
+    <string name="pref_default_other_intent_category">PLUGIN_CATEGORY</string>
 
 </resources>
 
