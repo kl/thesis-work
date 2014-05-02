@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.github.kl.webintegration.app.ForApplication;
+import com.github.kl.webintegration.app.Settings;
 import com.github.kl.webintegration.app.handlers.HttpServerHandler;
 
 import junit.framework.TestCase;
@@ -32,7 +33,7 @@ public class HttpServerHandlerTest extends TestCase {
     Context context;
 
     @Module(
-            injects = HttpServerHandlerTest.class
+        injects = HttpServerHandlerTest.class
     )
     static class TestModule {
 
@@ -40,12 +41,17 @@ public class HttpServerHandlerTest extends TestCase {
         Context provideApplicationContext() {
             return mock(Context.class);
         }
+
+        @Provides @Singleton
+        Settings provideSettings() {
+            return mock(Settings.class);
+        }
     }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        TestHelper.setDexCache();
+        TestUtils.setDexCache();
 
         ObjectGraph.create(new TestModule()).inject(this);
     }

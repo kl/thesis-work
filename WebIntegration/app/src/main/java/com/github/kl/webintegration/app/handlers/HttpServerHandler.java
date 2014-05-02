@@ -164,10 +164,8 @@ public class HttpServerHandler extends ResultHandler {
         }
 
         private void terminate() {
-            if (timer != null) timer.cancel();
-            timer = null;
+            if (timer  != null) timer.cancel();
             if (server != null) server.stop();
-            server = null;
             stopSelf();
         }
     }

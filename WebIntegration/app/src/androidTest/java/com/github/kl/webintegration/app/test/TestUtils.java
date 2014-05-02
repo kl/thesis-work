@@ -1,6 +1,6 @@
 package com.github.kl.webintegration.app.test;
 
-class TestHelper {
+class TestUtils {
 
     // Retrieved from running getInstrumentation().getTargetContext().getCacheDir().getPath()
     private static final String DEX_CACHE_PATH = "/data/data/com.github.kl.webintegration.app/cache";

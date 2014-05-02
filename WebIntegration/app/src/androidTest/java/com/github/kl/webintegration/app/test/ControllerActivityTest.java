@@ -1,14 +1,15 @@
 package com.github.kl.webintegration.app.test;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.test.ActivityUnitTestCase;
 
+import com.github.kl.webintegration.app.AppModule;
 import com.github.kl.webintegration.app.ControllerActivity;
-import com.github.kl.webintegration.app.ProgressDialogFactory;
+import com.github.kl.webintegration.app.Settings;
 import com.github.kl.webintegration.app.controllers.PluginController;
+import com.github.kl.webintegration.app.controllers.SystemPluginController;
 import com.github.kl.webintegration.app.handlers.ResultHandler;
 import com.google.common.base.Preconditions;
 
@@ -47,8 +48,12 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
     // are injected in to the class under test, and they can be checked in the test methods.
     @Inject @Named("pluginControllers") Set<PluginController> controllers;
     @Inject @Named("resultHandlers") Set<ResultHandler> handlers;
+    @Inject Settings settings;
+    @Inject SystemPluginController systemPluginController;
 
-    @Module(injects = {ControllerActivity.class, ControllerActivityTest.class})
+    @Module(
+        injects = {ControllerActivity.class, ControllerActivityTest.class}
+    )
     static class TestModule {
 
         @Provides @Singleton @Named("pluginControllers")
@@ -75,17 +80,20 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
         }
 
         @Provides @Singleton
-        ProgressDialogFactory provideProgressDialogFactory() {
-            ProgressDialogFactory pdf = mock(ProgressDialogFactory.class);
-            when(pdf.newProgressDialog(any(Context.class))).thenReturn(mock(ProgressDialog.class));
-            return pdf;
+        Settings provideSettings() {
+            return mock(Settings.class);
+        }
+
+        @Provides @Singleton
+        SystemPluginController provideSystemPluginController() {
+            return mock(SystemPluginController.class);
         }
     }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        TestHelper.setDexCache();
+        TestUtils.setDexCache();
 
         MockInjectorApplication app = new MockInjectorApplication(new TestModule());
         app.inject(this);
@@ -135,7 +143,7 @@ public class ControllerActivityTest extends ActivityUnitTestCase<ControllerActiv
         activity.onPluginResult(jsonmap("data", "test"), mock(PluginController.class)); // the second argument does not matter
 
         ResultHandler selectedHandler = getHandlerWithType(VALID_HANDLER_NAME);
-        verify(selectedHandler).onCustomizeProgressDialog(any(ProgressDialog.class));
+        verify(selectedHandler).onCustomizeProgressDialog(any(Bundle.class));
     }
 
     private void startActivityWithValidPlugin() {

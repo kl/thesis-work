@@ -1,5 +1,6 @@
 package com.github.kl.webintegration.app;
 
+import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -52,9 +53,9 @@ that was constructed with an outdated port number that has since been changed in
 )
 public class AppModule {
 
-    private final WebIntegrationApplication application;
+    private final Application application;
 
-    public AppModule(WebIntegrationApplication application) {
+    public AppModule(Application application) {
         this.application = application;
     }
 
