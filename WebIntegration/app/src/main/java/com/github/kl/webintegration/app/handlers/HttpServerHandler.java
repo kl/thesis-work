@@ -79,13 +79,13 @@ public class HttpServerHandler extends ResultHandler {
     public void onUserCancel() {}
 
     private String getPluginNotFoundJson() {
-        return "\"" + settings.getPluginNotFoundKey() + "\":" +
-               "\"" + settings.getPluginNotFoundValue() + "\"}";
+        return "{\"" + settings.getPluginNotFoundKey() + "\":" +
+               "\""  + settings.getPluginNotFoundValue() + "\"}";
     }
 
     private String getCancelJson() {
-        return "\"" + settings.getUserCancelKey() + "\":" +
-               "\"" + settings.getUserCancelValue() + "\"}";
+        return "{\"" + settings.getUserCancelKey() + "\":" +
+               "\""  + settings.getUserCancelValue() + "\"}";
     }
 
     private Intent getServerIntent(String json) {
