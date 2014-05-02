@@ -81,7 +81,7 @@ public class Settings {
     }
 
     public String getPluginIntentAction() {
-        return readValue(R.string.pref_key_other_intent_action);
+        return readValue(R.string.pref_key_other_intent_category);
     }
 }
 
