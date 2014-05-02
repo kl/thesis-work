@@ -32,7 +32,7 @@ public class SystemPluginController extends PluginController {
     public void setPluginIntent(String pluginName) {
         pluginIntent = new Intent();
         pluginIntent.setAction(pluginName);
-        pluginIntent.addCategory(settings.getPluginIntentAction());
+        pluginIntent.addCategory(settings.getPluginIntentCategory());
     }
 
     @Override

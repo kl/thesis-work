@@ -2,6 +2,7 @@ package com.github.kl.webintegration.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import javax.annotation.concurrent.ThreadSafe;
 import javax.inject.Inject;
@@ -63,13 +64,6 @@ public class Settings {
         return readValue(R.string.pref_key_protocol_not_found_value);
     }
 
-    private String readValue(int prefKeyId) {
-        String key = context.getString(prefKeyId);
-        String value = sharedPreferences.getString(key, null);
-        if (value == null) throw new RuntimeException("Error reading key from SharedPreferences");
-        return value;
-    }
-
     public int getLocalServerTimeoutMs() {
         int timeoutSeconds = Integer.parseInt(readValue(R.string.pref_key_local_server_timeout));
         return timeoutSeconds * 1000;
@@ -80,8 +74,16 @@ public class Settings {
         return sharedPreferences.getBoolean(key, false);
     }
 
-    public String getPluginIntentAction() {
+    public String getPluginIntentCategory() {
         return readValue(R.string.pref_key_other_intent_category);
+    }
+
+    private String readValue(int prefKeyId) {
+        String key = context.getString(prefKeyId);
+        Log.d(WebIntegrationApplication.LOG_TAG, key);
+        String value = sharedPreferences.getString(key, null);
+        if (value == null) throw new RuntimeException("Error reading key from SharedPreferences");
+        return value;
     }
 }
 
