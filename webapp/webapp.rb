@@ -17,21 +17,18 @@ get "/android" do
 end
 
 post "/android" do
-  json = JSON.parse(request.body.read)
-  message = json["message"]
-
-  File.write(JSON_PATH, {data: message}.to_json)
+  File.write(JSON_PATH, request.body.read)
   status 200
 end
 
 get "/appdata" do
   content_type :json
 
-  data = JSON.parse(File.read(JSON_PATH))["data"]
+  json = File.read(JSON_PATH)
   clear_current_message
 
   response.headers['Access-Control-Allow-Origin'] = '*'
-  {message: data}.to_json
+  json
 end
 
 helpers do
@@ -82,6 +79,7 @@ __END__
     <a href="app://web.android/CHEESE_GRATER/HTTP_POST"     onclick="startPollingRemote()">Non-existing</a>
     <a href="app://web.android/SCANNER_BARCODE/HTTP_SERVER" onclick="startPollingLocal()">Barcode Server</a>
     <a href="app://web.android/SCANNER_BARCODE/HTTPS_POST"  onclick="startPollingRemote()">Barcode HTTPS</a>
+    <a href="app://web.android/CONTACT_PICKER/HTTP_POST"    onclick="startPollingRemote()">Contact Picker</a>
   </div>
   <hr/>
   <div id="message_list" />
@@ -99,16 +97,19 @@ function startPollingLocal() {
 function performPoll(url) {
 
   function poll() {
-    $.get(url, function(data) {
-      if (data.message === "plugin_not_found") {
+    $.get(url, function(json) {
+      if (json.message === "plugin_not_found") {
         clearInterval(pollInterval);
         alert("Plugin not found")
-      } else if (data.message === "user_cancel") {
+      } else if (json.message === "user_cancel") {
         clearInterval(pollInterval);
         alert("User canceled")
-      } else if (data.message != null) {
+      } else if (json.email != null) {
         clearInterval(pollInterval);
-        $("#message_list").append("<p>" + data.message + "</p>");
+        $("#message_list").append("<p>" + "Email: " + json.email + "</p>");
+      } else if (json.message != null) {
+        clearInterval(pollInterval);
+        $("#message_list").append("<p>" + json.message + "</p>");
       }
     });
   }

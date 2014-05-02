@@ -11,10 +11,7 @@ class HttpsPostBox < Sinatra::Base
   JSON_PATH = File.join(settings.root, "android_data.json")
 
   post "/android" do
-    json = JSON.parse(request.body.read)
-    message = json["message"]
-
-    File.write(JSON_PATH, {data: message}.to_json)
+    File.write(JSON_PATH, request.body.read)
     status 200
   end
 end
