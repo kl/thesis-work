@@ -31,6 +31,10 @@ get "/appdata" do
   json
 end
 
+get "/speedtest" do
+  erb :speedtest
+end
+
 helpers do
   def clear_current_message
     File.write(JSON_PATH, {data: nil}.to_json)
@@ -116,3 +120,80 @@ function performPoll(url) {
   var pollInterval = setInterval(poll, 1000);
 }
 </script>
+
+@@ speedtest
+<div id="main">
+  <div id="links">
+    <a href="app://web.android/SPEED_TEST/HTTP_POST" onclick="speedTestPollRemote('/appdata', 10)">Built-in controller - HTTP post</a>
+    <a href="app://web.android/SPEED_TEST/HTTP_SERVER" onclick="speedTestPollRemote('http://localhost:9999', 10)">Built-in controller - Local server</a>
+  </div>
+  <div id="message_list" />
+</div>
+
+<script>
+
+function speedTestPollRemote(url, pollMs) {
+
+  var startTime = new Date().getTime(); // unix time
+
+  function poll() {
+    $.get(url, function(json) {
+      if (json.message != null) {
+        clearInterval(pollInterval);
+        var time = new Date().getTime();
+        var timeTaken = time - startTime;
+        $("#message_list").append("<p>" + timeTaken + " ms" + "</p>");
+      }
+    });
+  }
+  var pollInterval = setInterval(poll, pollMs);
+}
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
