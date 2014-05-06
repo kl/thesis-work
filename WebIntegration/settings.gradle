@@ -1,1 +1,1 @@
-include ':app', ':contactpicker', ':speedtest'
+include ':app', ':contactpicker', ':speedtest', ':speedtestcontroller'

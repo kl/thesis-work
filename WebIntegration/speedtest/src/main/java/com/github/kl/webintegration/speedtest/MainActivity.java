@@ -11,7 +11,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         Intent result = new Intent();
-        result.putExtra("result", "ok");
+        result.putExtra("message", "ok");
         setResult(Activity.RESULT_OK, result);
         finish();
     }
