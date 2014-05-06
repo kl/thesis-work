@@ -14,6 +14,7 @@ import com.github.kl.webintegration.app.controllers.BarcodeScanController;
 import com.github.kl.webintegration.app.controllers.PluginController;
 import com.github.kl.webintegration.app.controllers.ProductScanController;
 import com.github.kl.webintegration.app.controllers.QRScanController;
+import com.github.kl.webintegration.app.controllers.SpeedTestController;
 import com.github.kl.webintegration.app.handlers.HttpPostHandler;
 import com.github.kl.webintegration.app.handlers.HttpServerHandler;
 import com.github.kl.webintegration.app.handlers.HttpServerHandler.ServerService;
@@ -78,11 +79,12 @@ public class AppModule {
             BarcodeScanController bsc,
             QRScanController qsc,
             AllScanController asc,
-            ProductScanController psc
+            ProductScanController psc,
+            SpeedTestController stc
     )
     {
         Set<PluginController> controllers = new HashSet<>();
-        controllers.addAll(Lists.newArrayList(bsc, qsc, asc, psc));
+        controllers.addAll(Lists.newArrayList(bsc, qsc, asc, psc, stc));
         return controllers;
     }
 

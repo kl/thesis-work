@@ -22,7 +22,7 @@ public class SpeedTestController extends PluginController {
 
     @Override
     public Intent getPluginIntent() {
-        return new Intent("com.github.kl.webintegration.speedtest.MainActivity");
+        return new Intent("com.github.kl.webintegration.speedtest.LAUNCH");
     }
 
     @Override
