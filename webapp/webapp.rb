@@ -67,6 +67,9 @@ __END__
       div#message_list {
         font-size: 30;
       }
+      table#speed_test {
+
+      }
     </style>
   </head>
 
@@ -130,10 +133,25 @@ function handleGet(json) {
 
 @@ speedtest
 <div id="main">
+
   <div id="links">
-    <a href="app://web.android/SPEED_TEST/HTTP_POST" onclick="speedTest('/appdata', 10)">Built-in controller - HTTP post</a>
-    <a href="app://web.android/SPEED_TEST/HTTP_SERVER" onclick="speedTest('http://localhost:9999', 10)">Built-in controller - Local server</a>
+    <table>
+      <tr>
+        <th>HTTP Post</th>
+        <th>Local server</th>
+      </tr>
+      <tr>
+        <td><a href="app://web.android/SPEED_TEST/HTTP_POST" onclick="speedTest('/appdata', 10)">Built-in</a></td>
+        <td><a href="app://web.android/SPEED_TEST/HTTP_SERVER" onclick="speedTest('http://localhost:9999', 10)">Built-in</a></td>
+      </tr>
+      <tr>
+        <td><a href="app://web.android/SPEED_TEST_SYSTEM/HTTP_POST" onclick="speedTest('/appdata', 10)">System</a></td>
+        <td><a href="app://web.android/SPEED_TEST_SYSTEM/HTTP_SERVER" onclick="speedTest('http://localhost:9999', 10)">System</a></td>
+      </tr>
+    </table>
   </div>
+
+  <hr/>
   <div id="message_list" />
 </div>
 
@@ -143,7 +161,10 @@ function speedTest(url, pollMs) {
   var startTime = new Date().getTime(); // unix time
 
   performPoll(url, pollMs, function success(json) {
-    if (json.message != null) {
+    if (json.message === "plugin_not_found") {
+      clearInterval(success.interval);
+      alert("Plugin not found")
+    } else if (json.message != null) {
       clearInterval(success.interval);
       var time = new Date().getTime();
       var timeTaken = time - startTime;
