@@ -45,32 +45,45 @@ __END__
 
 @@ layout
 <html>
-<head>
-  <title>Android Integration</title>
-  <meta charset="utf-8" />
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <head>
+    <title>Android Integration</title>
+    <meta charset="utf-8" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 
-  <style>
-    div#main {
-      width: 700px;
-      margin-top: 10%;
-      margin-left: auto;
-      margin-right: auto;
-    } 
-    div#links a {
-      font-size: 30;
-      margin-right: 10;
-    }
-    ul#message_list {
-      list-style-type: none;
-    }
-    div#message_list {
-      font-size: 30;
-    }
-  </style>
+    <style>
+      div#main {
+        width: 700px;
+        margin-top: 10%;
+        margin-left: auto;
+        margin-right: auto;
+      } 
+      div#links a {
+        font-size: 30;
+        margin-right: 10;
+      }
+      ul#message_list {
+        list-style-type: none;
+      }
+      div#message_list {
+        font-size: 30;
+      }
+    </style>
+  </head>
 
-</head>
-<body><%= yield %></body>
+  <body>
+    <script>
+      function performPoll(url, delay, callback) {
+
+        function poll() {
+          $.get(url, callback);
+        }
+        callback.interval = setInterval(poll, delay); 
+      }
+    </script>
+
+    <%= yield %>
+    
+  </body>
 </html>
 
 @@ main
@@ -91,100 +104,54 @@ __END__
 
 <script>
 function startPollingRemote() {                         
-  performPoll("/appdata");
+  performPoll("/appdata", 1000, handleGet);
 }
 
 function startPollingLocal() {                         
-  performPoll("http://localhost:9999");
+  performPoll("http://localhost:9999", 1000, handleGet);
 }
 
-function performPoll(url) {
-
-  function poll() {
-    $.get(url, function(json) {
-      if (json.message === "plugin_not_found") {
-        clearInterval(pollInterval);
-        alert("Plugin not found")
-      } else if (json.message === "user_cancel") {
-        clearInterval(pollInterval);
-        alert("User canceled")
-      } else if (json.email != null) {
-        clearInterval(pollInterval);
-        $("#message_list").append("<p>" + "Email: " + json.email + "</p>");
-      } else if (json.message != null) {
-        clearInterval(pollInterval);
-        $("#message_list").append("<p>" + json.message + "</p>");
-      }
-    });
+function handleGet(json) {
+  if (json.message === "plugin_not_found") {
+    clearInterval(handleGet.interval);
+    alert("Plugin not found")
+  } else if (json.message === "user_cancel") {
+    clearInterval(handleGet.interval);
+    alert("User canceled")
+  } else if (json.email != null) {
+    clearInterval(handleGet.interval);
+    $("#message_list").append("<p>" + "Email: " + json.email + "</p>");
+  } else if (json.message != null) {
+    clearInterval(handleGet.interval);
+    $("#message_list").append("<p>" + json.message + "</p>");
   }
-  var pollInterval = setInterval(poll, 1000);
 }
 </script>
 
 @@ speedtest
 <div id="main">
   <div id="links">
-    <a href="app://web.android/SPEED_TEST/HTTP_POST" onclick="speedTestPollRemote('/appdata', 10)">Built-in controller - HTTP post</a>
-    <a href="app://web.android/SPEED_TEST/HTTP_SERVER" onclick="speedTestPollRemote('http://localhost:9999', 10)">Built-in controller - Local server</a>
+    <a href="app://web.android/SPEED_TEST/HTTP_POST" onclick="speedTest('/appdata', 10)">Built-in controller - HTTP post</a>
+    <a href="app://web.android/SPEED_TEST/HTTP_SERVER" onclick="speedTest('http://localhost:9999', 10)">Built-in controller - Local server</a>
   </div>
   <div id="message_list" />
 </div>
 
 <script>
-
-function speedTestPollRemote(url, pollMs) {
+function speedTest(url, pollMs) {
 
   var startTime = new Date().getTime(); // unix time
 
-  function poll() {
-    $.get(url, function(json) {
-      if (json.message != null) {
-        clearInterval(pollInterval);
-        var time = new Date().getTime();
-        var timeTaken = time - startTime;
-        $("#message_list").append("<p>" + timeTaken + " ms" + "</p>");
-      }
-    });
-  }
-  var pollInterval = setInterval(poll, pollMs);
+  performPoll(url, pollMs, function success(json) {
+    if (json.message != null) {
+      clearInterval(success.interval);
+      var time = new Date().getTime();
+      var timeTaken = time - startTime;
+      $("#message_list").append("<p>" + timeTaken + " ms" + "</p>");
+    }
+  });
 }
-
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
