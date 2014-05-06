@@ -3,8 +3,10 @@ package com.github.kl.webintegration.app.controllers;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.github.kl.webintegration.app.Settings;
+import com.github.kl.webintegration.app.WebIntegrationApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,8 +61,12 @@ public class SystemPluginController extends PluginController {
 
     private void handleResultOk(Intent data) {
         try {
-            JSONObject json = bundleToJson(data.getExtras());
-            notifyPluginResult(json, this);
+            if (data != null) {
+                JSONObject json = bundleToJson(data.getExtras());
+                notifyPluginResult(json, this);
+            } else {
+                notifyPluginResult(new JSONObject(), this);
+            }
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
