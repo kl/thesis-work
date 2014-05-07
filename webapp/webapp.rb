@@ -88,10 +88,12 @@ helpers do
   end
 
   def short_url_to_full(short)
-    {"bp" => SPEED_POST,
-     "bs" => SPEED_SERVER,
-     "sp" => SPEED_SYSTEM_POST,
-     "ss" => SPEED_SYSTEM_SERVER
+    {"bp"  => SPEED_POST,
+     "bps" => SPEED_POST_S,
+     "bs"  => SPEED_SERVER,
+     "sp"  => SPEED_SYSTEM_POST,
+     "sps" => SPEED_SYSTEM_POST_S,
+     "ss"  => SPEED_SYSTEM_SERVER
     }[short]
   end
 
