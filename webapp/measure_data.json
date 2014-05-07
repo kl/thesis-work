@@ -1,0 +1,64 @@
+{
+  "measurements": [
+    {
+      "pluginLink": "app://web.android/SPEED_TEST/HTTP_POST",
+      "times": 1,
+      "pollUrl": "/appdata",
+      "values": [
+        291
+      ],
+      "startTime": "2014-05-07 10:50:42"
+    },
+    {
+      "pluginLink": "app://web.android/SPEED_TEST/HTTP_POST",
+      "times": 9,
+      "pollUrl": "/appdata",
+      "values": [
+        365,
+        318,
+        353,
+        446,
+        239,
+        311,
+        257,
+        326,
+        358
+      ],
+      "startTime": "2014-05-07 11:06:11"
+    },
+    {
+      "pluginLink": "app://web.android/SPEED_TEST/HTTP_POST",
+      "times": 9,
+      "pollUrl": "/appdata",
+      "values": [
+        400,
+        466,
+        376,
+        266,
+        309,
+        305,
+        224,
+        329,
+        410
+      ],
+      "startTime": "2014-05-07 11:11:11"
+    },
+    {
+      "pluginLink": "app://web.android/SPEED_TEST/HTTP_POST",
+      "times": 9,
+      "pollUrl": "/appdata",
+      "values": [
+        246,
+        283,
+        302,
+        285,
+        422,
+        366,
+        290,
+        368,
+        377
+      ],
+      "startTime": "2014-05-07 11:11:33"
+    }
+  ]
+}

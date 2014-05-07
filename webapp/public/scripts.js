@@ -48,9 +48,8 @@ function speedTest(url, pollMs, callback) {
             clearInterval(success.interval);
             alert("Plugin not found")
         } else if (json.message != null) {
+            var timeTaken = (new Date().getTime()) - startTime;
             clearInterval(success.interval);
-            var time = new Date().getTime();
-            var timeTaken = time - startTime;
             callback(timeTaken);
         }
     });
@@ -60,27 +59,39 @@ function printTime(time) {
     $("#message_list").append("<p>" + time + " ms" + "</p>");
 }
 
-function speedMeasure(link, maxTimes) {
-    var times = 0;
-    var pollUrl = getPollUrl(link);
-    console.log(pollUrl);
+function speedMeasure(link, maxTimes, callback) {
+    var measure = {};
+    measure.pluginLink = link;
+    measure.times = maxTimes;
+    measure.pollUrl = getPollUrl(link);
+    measure.timestamp = new Date().getTime();
+    measure.values = [];
+    console.log("Starting measurement\nlink: " + measure.pluginLink + "\ntimes: " + measure.times + "\npoll url: " + measure.pollUrl);
 
-    function measure() {
-        speedTest(pollUrl, 10, function(time) {
-            console.log(time);
+    var times = 0;
+    function start() {
+        speedTest(measure.pollUrl, 10, function(time) {
+            if ($.type(callback) !== "undefined") callback(time);
+            measure.values.push(time);
             times += 1;
-            if (times < maxTimes) {
+
+            if (times < measure.times) {
                 setTimeout(function() {
-                    window.location.href = link;
-                    measure();
+                    window.location.href = measure.pluginLink;
+                    start();
                 }, 500);
+            } else {
+                $.post("/measure", JSON.stringify(measure), function() {
+                    console.log("measure success");
+                    if ($.type(callback) !== "undefined") callback("done");
+                });
             }
         });
     }
 
     // Start measurement
-    window.location.href = link;
-    measure();
+    window.location.href = measure.pluginLink;
+    start();
 }
 
 function getPollUrl(link) {
@@ -94,20 +105,6 @@ function getPollUrl(link) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+function counter(time) {
+    (time === "done") ? $("#message_list").append("*") : $("#message_list").append(". ");
+}

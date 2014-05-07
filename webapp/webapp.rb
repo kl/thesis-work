@@ -23,7 +23,8 @@ SPEED_SERVER        = "app://web.android/SPEED_TEST/HTTP_SERVER"
 SPEED_SYSTEM_POST   = "app://web.android/SPEED_TEST_SYSTEM/HTTP_POST"
 SPEED_SYSTEM_SERVER = "app://web.android/SPEED_TEST_SYSTEM/HTTP_SERVER"
 
-JSON_PATH = File.join(settings.root, "android_data.json")
+JSON_PATH    = File.join(settings.root, "android_data.json")
+MEASURE_PATH = File.join(settings.root, "measure_data.json")
 
 get "/android" do
   clear_current_message
@@ -55,6 +56,18 @@ get "/measure/:what/:times" do
   erb :measure
 end
 
+post "/measure" do
+  measure = JSON.parse(request.body.read)
+  measure["startTime"] = Time.at(measure["timestamp"].to_i / 1000).strftime("%Y-%m-%d %H:%M:%S")
+  measure.delete("timestamp")
+
+  data = JSON.parse(read_measure_file)
+  data["measurements"] << measure
+  File.write(MEASURE_PATH, JSON.pretty_generate(data))
+
+  status 200
+end
+
 helpers do
   def clear_current_message
     File.write(JSON_PATH, {data: nil}.to_json)
@@ -66,6 +79,13 @@ helpers do
      "sp" => SPEED_SYSTEM_POST,
      "ss" => SPEED_SYSTEM_SERVER
     }[short]
+  end
+
+  def read_measure_file
+    return File.read(MEASURE_PATH) if File.exist?(MEASURE_PATH)
+    base = '{"measurements":[]}'
+    File.write(MEASURE_PATH, base)
+    base
   end
 end
 
@@ -149,8 +169,11 @@ __END__
 @@ measure
 <div id="main">
   <div id="links">
-    <a href="#" onclick="speedMeasure('<%= @what %>', <%= @times %>)">Start measure</a>
+    <a href="#" onclick="speedMeasure('<%= @what %>', <%= @times %>, counter)">Start measure</a>
   </div>
+  <hr/>
+  <div id="message_list" />
 </div>
+
 
 
