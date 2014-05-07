@@ -35,6 +35,10 @@ function speedTestHttpPost() {
     speedTest("/appdata", 10, printTime);
 }
 
+function speedTestHttpsPost() {
+    speedTestHttpPost();
+}
+
 function speedTestLocalServer() {
     speedTest("http://localhost:9999", 10, printTime);
 }
@@ -70,7 +74,7 @@ function speedMeasure(link, maxTimes, callback) {
 
     var times = 0;
     function start() {
-        speedTest(measure.pollUrl, 10, function(time) {
+        speedTest(measure.pollUrl, 5, function(time) {
             if ($.type(callback) !== "undefined") callback(time);
             measure.values.push(time);
             times += 1;
@@ -106,5 +110,5 @@ function getPollUrl(link) {
 }
 
 function counter(time) {
-    (time === "done") ? $("#message_list").append("*") : $("#message_list").append(". ");
+    (time === "done") ? $("#message_list").append("😃 ") : $("#message_list").append("😸 ");
 }

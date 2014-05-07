@@ -1,6 +1,7 @@
 
 require 'sinatra/base'
 require 'json'
+require 'rest_client'
 
 class HttpsPostBox < Sinatra::Base
 
@@ -11,7 +12,7 @@ class HttpsPostBox < Sinatra::Base
   JSON_PATH = File.join(settings.root, "android_data.json")
 
   post "/android" do
-    File.write(JSON_PATH, request.body.read)
+    RestClient.post("http://localhost:9000/android", request.body.read)
     status 200
   end
 end

@@ -1,14 +1,16 @@
 
 require 'sinatra'
 require 'json'
+require 'thread'
 require "pry"
+
+$lock = Mutex.new
 
 set :server, 'thin'
 set :port, 9000
 set :bind, '0.0.0.0'
 
-set :messages, []
-set :current_message, nil
+set :data, nil
 
 BARCODE_POST        = "app://web.android/SCANNER_BARCODE/HTTP_POST"
 BARCODE_HTTPS_POST  = "app://web.android/SCANNER_BARCODE/HTTPS_POST"
@@ -19,38 +21,38 @@ NONEXISTING         = "app://web.android/CHEESE_GRATER/HTTP_POST"
 BARCODE_SERVER      = "app://web.android/SCANNER_BARCODE/HTTP_SERVER"
 CONTACT_POST        = "app://web.android/CONTACT_PICKER/HTTP_POST"
 SPEED_POST          = "app://web.android/SPEED_TEST/HTTP_POST"
+SPEED_POST_S        = "app://web.android/SPEED_TEST/HTTPS_POST"
 SPEED_SERVER        = "app://web.android/SPEED_TEST/HTTP_SERVER"
 SPEED_SYSTEM_POST   = "app://web.android/SPEED_TEST_SYSTEM/HTTP_POST"
+SPEED_SYSTEM_POST_S = "app://web.android/SPEED_TEST_SYSTEM/HTTPS_POST"
 SPEED_SYSTEM_SERVER = "app://web.android/SPEED_TEST_SYSTEM/HTTP_SERVER"
 
-JSON_PATH    = File.join(settings.root, "android_data.json")
 MEASURE_PATH = File.join(settings.root, "measure_data.json")
 
 get "/android" do
-  clear_current_message
+  clear_data
   erb :main
 end
 
 post "/android" do
-  File.write(JSON_PATH, request.body.read)
+  set_data(request.body.read)
   status 200
 end
 
 get "/appdata" do
   content_type :json
-
-  json = File.read(JSON_PATH)
-  clear_current_message
-
   response.headers['Access-Control-Allow-Origin'] = '*'
-  json
+
+  read_and_clear_data
 end
 
 get "/speedtest" do
+  clear_data
   erb :speedtest
 end
 
 get "/measure/:what/:times" do
+  clear_data
   @what = short_url_to_full(params["what"])
   @times = params[:times]
   erb :measure
@@ -69,8 +71,20 @@ post "/measure" do
 end
 
 helpers do
-  def clear_current_message
-    File.write(JSON_PATH, {data: nil}.to_json)
+  def set_data(data)
+    $lock.synchronize { settings.data = data }
+  end
+
+  def read_and_clear_data
+    $lock.synchronize do
+      data = settings.data
+      settings.data = {data: nil}.to_json
+      data
+    end
+  end
+
+  def clear_data
+    $lock.synchronize { settings.data = {data: nil}.to_json }
   end
 
   def short_url_to_full(short)
@@ -149,15 +163,18 @@ __END__
     <table>
       <tr>
         <th>HTTP Post</th>
+        <th>HTTPS Post</th>
         <th>Local server</th>
       </tr>
       <tr>
-        <td><a id="pb" href="<%= SPEED_POST %>" onclick="speedTestHttpPost()">Built-in</a></td>
-        <td><a id="sb" href="<%= SPEED_SERVER %>" onclick="speedTestLocalServer()">Built-in</a></td>
+        <td><a href="<%= SPEED_POST %>" onclick="speedTestHttpPost()">Built-in</a></td>
+        <td><a href="<%= SPEED_POST_S %>" onclick="speedTestHttpsPost()">Built-in</a></td>
+        <td><a href="<%= SPEED_SERVER %>" onclick="speedTestLocalServer()">Built-in</a></td>
       </tr>
       <tr>
-        <td><a id="ps" href="<%= SPEED_SYSTEM_POST %>" onclick="speedTestHttpPost()">System</a></td>
-        <td><a id="ss" href="<%= SPEED_SYSTEM_SERVER %>" onclick="speedTestLocalServer()">System</a></td>
+        <td><a href="<%= SPEED_SYSTEM_POST %>" onclick="speedTestHttpPost()">System</a></td>
+        <td><a href="<%= SPEED_SYSTEM_POST_S %>" onclick="speedTestHttpsPost()">System</a></td>
+        <td><a href="<%= SPEED_SYSTEM_SERVER %>" onclick="speedTestLocalServer()">System</a></td>
       </tr>
     </table>
   </div>
