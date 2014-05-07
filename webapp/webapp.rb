@@ -149,7 +149,7 @@ __END__
 @@ measure
 <div id="main">
   <div id="links">
-    <a href="#" onclick="speedMeasure(<%= @times %>, '<%= @what %>')">Start measure</a>
+    <a href="#" onclick="speedMeasure('<%= @what %>', <%= @times %>)">Start measure</a>
   </div>
 </div>
 

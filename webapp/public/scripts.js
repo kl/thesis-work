@@ -60,12 +60,13 @@ function printTime(time) {
     $("#message_list").append("<p>" + time + " ms" + "</p>");
 }
 
-function speedMeasure(maxTimes) {
-    var link = "app://web.android/SPEED_TEST_SYSTEM/HTTP_POST";
+function speedMeasure(link, maxTimes) {
     var times = 0;
+    var pollUrl = getPollUrl(link);
+    console.log(pollUrl);
 
     function measure() {
-        speedTest("/appdata", 10, function(time) {
+        speedTest(pollUrl, 10, function(time) {
             console.log(time);
             times += 1;
             if (times < maxTimes) {
@@ -81,3 +82,32 @@ function speedMeasure(maxTimes) {
     window.location.href = link;
     measure();
 }
+
+function getPollUrl(link) {
+    var parts = link.split("/");
+    var last = parts[parts.length-1];
+
+    if (last.indexOf("SERVER") === -1) {
+        return "/appdata";
+    } else {
+        return "http://localhost:9999";
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
