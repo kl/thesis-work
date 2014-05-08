@@ -2,9 +2,19 @@
 function performPoll(url, delay, callback) {
 
     function poll() {
-        $.get(url, callback);
+        $.ajax({
+            dataType: "json",
+            url: url,
+            success: function(result) {
+                performPoll.timeout = setTimeout(poll, delay);
+                callback(result);
+            },
+            error: function() {
+                performPoll.timeout = setTimeout(poll, delay);
+            }
+        });
     }
-    callback.interval = setInterval(poll, delay);
+    poll();
 }
 
 function startPollingRemote() {
@@ -17,16 +27,16 @@ function startPollingLocal() {
 
 function handleGet(json) {
     if (json.message === "plugin_not_found") {
-        clearInterval(handleGet.interval);
+        clearTimeout(performPoll.timeout);
         alert("Plugin not found")
     } else if (json.message === "user_cancel") {
-        clearInterval(handleGet.interval);
+        clearTimeout(performPoll.timeout);
         alert("User canceled")
     } else if (json.email != null) {
-        clearInterval(handleGet.interval);
+        clearTimeout(performPoll.timeout);
         $("#message_list").append("<p>" + "Email: " + json.email + "</p>");
     } else if (json.message != null) {
-        clearInterval(handleGet.interval);
+        clearTimeout(performPoll.timeout);
         $("#message_list").append("<p>" + json.message + "</p>");
     }
 }
@@ -49,11 +59,11 @@ function speedTest(url, pollMs, callback) {
 
     performPoll(url, pollMs, function success(json) {
         if (json.message === "plugin_not_found") {
-            clearInterval(success.interval);
+            clearTimeout(performPoll.timeout);
             alert("Plugin not found")
         } else if (json.message != null) {
+            clearTimeout(performPoll.timeout);
             var timeTaken = (new Date().getTime()) - startTime;
-            clearInterval(success.interval);
             callback(timeTaken);
         }
     });
@@ -63,7 +73,7 @@ function printTime(time) {
     $("#message_list").append("<p>" + time + " ms" + "</p>");
 }
 
-function speedMeasure(link, maxTimes, callback) {
+function speedMeasure(link, maxTimes, delay, callback) {
     var measure = {};
     measure.pluginLink = link;
     measure.times = maxTimes;
@@ -74,7 +84,7 @@ function speedMeasure(link, maxTimes, callback) {
 
     var times = 0;
     function start() {
-        speedTest(measure.pollUrl, 5, function(time) {
+        speedTest(measure.pollUrl, 10, function(time) {
             if ($.type(callback) !== "undefined") callback(time);
             measure.values.push(time);
             times += 1;
@@ -83,7 +93,7 @@ function speedMeasure(link, maxTimes, callback) {
                 setTimeout(function() {
                     window.location.href = measure.pluginLink;
                     start();
-                }, 500);
+                }, delay);
             } else {
                 $.post("/measure", JSON.stringify(measure), function() {
                     console.log("measure success");

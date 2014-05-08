@@ -126,6 +126,10 @@ public abstract class NanoHTTPD {
      */
     private TempFileManagerFactory tempFileManagerFactory;
 
+    // EDIT
+    public volatile boolean hasSentResponse = false;
+    // EDITEND
+
     /**
      * Constructs an HTTP server on given port.
      */
@@ -825,7 +829,7 @@ public abstract class NanoHTTPD {
     // EDIT
     public static interface SendCompleted { public void onSendCompleted(); }
     public static SendCompleted sendCompletedListener = null;
-    // ENDEDIT
+    // EDITEND
 
     public class HTTPSession implements IHTTPSession {
         public static final int BUFSIZE = 8192;
@@ -926,8 +930,9 @@ public abstract class NanoHTTPD {
                     r.setRequestMethod(method);
                     r.send(outputStream);
                     // EDIT
+                    hasSentResponse = true;
                     if (sendCompletedListener != null) sendCompletedListener.onSendCompleted();
-                    // ENDEDIT
+                    // EDITEND
                 }
             } catch (SocketException e) {
                 // throw it out to close socket object (finalAccept)

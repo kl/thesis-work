@@ -181,13 +181,21 @@ public class HttpServerHandler extends ResultHandler {
 
         @Override
         public NanoHTTPD.Response serve(IHTTPSession session) {
+            if (hasSentResponse) {
+                Log.d(LOG_TAG, "serve called when hasSentResponse == true");
+                return getJsonResponse("{\"message\":null}");
+            }
+
             Log.d(LOG_TAG, "serve called");
             Preconditions.checkNotNull(result, "result must be set with setResponseResult");
+            return getJsonResponse(result.toString());
+        }
 
-            Response response = new Response(result.toString());
-            response.setMimeType("application/json");
-            response.addHeader("Access-Control-Allow-Origin", "*");
-            return response;
+        private Response getJsonResponse(String response) {
+            Response res = new Response(response);
+            res.setMimeType("application/json");
+            res.addHeader("Access-Control-Allow-Origin", "*");
+            return res;
         }
     }
 }

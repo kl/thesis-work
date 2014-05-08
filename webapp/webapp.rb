@@ -43,6 +43,7 @@ get "/appdata" do
   content_type :json
   response.headers['Access-Control-Allow-Origin'] = '*'
 
+  status 200
   read_and_clear_data
 end
 
@@ -53,8 +54,9 @@ end
 
 get "/measure/:what/:times" do
   clear_data
-  @what = short_url_to_full(params["what"])
   @times = params[:times]
+  @what = short_url_to_full(params["what"])
+  @delay = get_delay_between_measures(@what)
   erb :measure
 end
 
@@ -102,6 +104,10 @@ helpers do
     base = '{"measurements":[]}'
     File.write(MEASURE_PATH, base)
     base
+  end
+
+  def get_delay_between_measures(plugin_url)
+    plugin_url.split("/").last.include?("SERVER") ? 500 : 100
   end
 end
 
@@ -188,7 +194,7 @@ __END__
 @@ measure
 <div id="main">
   <div id="links">
-    <a href="#" onclick="speedMeasure('<%= @what %>', <%= @times %>, counter)">Start measure</a>
+    <a href="#" onclick="speedMeasure('<%= @what %>', <%= @times %>, <%= @delay %>, counter)">Start measure</a>
   </div>
   <hr/>
   <div id="message_list" />
