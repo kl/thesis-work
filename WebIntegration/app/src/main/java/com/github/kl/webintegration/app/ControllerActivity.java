@@ -37,7 +37,8 @@ import javax.inject.Named;
 
 import static com.github.kl.webintegration.app.WebIntegrationApplication.LOG_TAG;
 
-public class ControllerActivity extends Activity implements PluginResultListener, HandlerCompletedListener {
+public class ControllerActivity extends Activity
+        implements PluginResultListener, HandlerCompletedListener, Dialog.OnClickListener {
 
     private static final String TAG_STATE_FRAGMENT    = "state_fragment";
     private static final String TAG_ERROR_FRAGMENT    = "error_fragment";
@@ -238,6 +239,11 @@ public class ControllerActivity extends Activity implements PluginResultListener
         if (dialogFragment != null) dialogFragment.dismiss();
     }
 
+    @Override
+    public void onClick(DialogInterface dialogInterface, int i) {
+
+    }
+
     public static class StateFragment extends Fragment {
 
         // These objects need to be retained across configuration changes
@@ -262,22 +268,28 @@ public class ControllerActivity extends Activity implements PluginResultListener
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final ControllerActivity activity = (ControllerActivity)getActivity();
-            if (activity == null) throw new RuntimeException("getActivity returned null");
 
             Bundle options = getArguments();
             if (options == null) throw new RuntimeException("setArguments not called");
 
+            final ControllerActivity activity = (ControllerActivity)getActivity();
+            if (activity == null) throw new RuntimeException("getActivity returned null");
+
+            ProgressDialog dialog = getDialog(activity, options);
+            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                @Override public void onClick(DialogInterface dialog, int which) {
+                    activity.onProgressDialogCancel();
+                }
+            });
+
+            return dialog;
+        }
+
+        private ProgressDialog getDialog(Activity activity, Bundle options) {
             ProgressDialog dialog = new ProgressDialog(activity);
             dialog.setIndeterminate(options.getBoolean("indeterminate", true));
             dialog.setTitle(options.getString("title", "Result Handler"));
             dialog.setMessage(options.getString("message", "Loading..."));
-            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    activity.onProgressDialogCancel();
-                }
-            });
             return dialog;
         }
     }
@@ -294,6 +306,7 @@ public class ControllerActivity extends Activity implements PluginResultListener
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+
             final ControllerActivity activity = (ControllerActivity)getActivity();
             if (activity == null) throw new RuntimeException("getActivity returned null");
 
@@ -303,8 +316,7 @@ public class ControllerActivity extends Activity implements PluginResultListener
             return new AlertDialog.Builder(activity)
                     .setMessage(options.getString("message"))
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        @Override public void onClick(DialogInterface dialog, int which) {
                             activity.onErrorDialogFinish();
                         }
                     })
