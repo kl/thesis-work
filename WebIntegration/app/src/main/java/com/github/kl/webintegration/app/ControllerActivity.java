@@ -25,6 +25,8 @@ import com.google.common.base.Preconditions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -83,8 +85,6 @@ public class ControllerActivity extends Activity implements PluginResultListener
         String handlerType = getHandlerType(intent);
         String pluginType  = getPluginType(intent);
 
-        systemPluginController.setPluginIntent(pluginType);
-
         handler = findResultHandler(handlerType);
         if (handler != null) {
             stateFragment.resultHandler = handler;
@@ -119,17 +119,16 @@ public class ControllerActivity extends Activity implements PluginResultListener
     }
 
     private String getPluginType(Intent intent) {
-        return getDataPathSegment(intent, 0);
+        return parseUri(intent.getData()).get(0);
     }
 
     private String getHandlerType(Intent intent) {
-        return getDataPathSegment(intent, 1);
+        return parseUri(intent.getData()).get(1);
     }
 
-    private String getDataPathSegment(Intent intent, int index) {
-        Uri data = intent.getData();
-        List<String> segments = data.getPathSegments(); // TODO: handle null here
-        return segments.get(index);
+    private List<String> parseUri(Uri uri) {
+        String[] parts = uri.toString().split("/+");
+        return Arrays.asList(Arrays.copyOfRange(parts, 1, parts.length));
     }
 
     private ResultHandler findResultHandler(String handlerType) {
@@ -143,8 +142,9 @@ public class ControllerActivity extends Activity implements PluginResultListener
         for (PluginController controller : pluginControllers) {
             if (controller.getType().equals(pluginType)) return controller;
         }
-        if (settings.getSystemPluginsEnabled() &&
-            isIntentAvailable(systemPluginController.getPluginIntent())) {
+
+        systemPluginController.setPluginIntent(pluginType);
+        if (settings.getSystemPluginsEnabled() && isIntentAvailable(systemPluginController.getPluginIntent())) {
             return systemPluginController;
         } else {
             return null;
@@ -238,7 +238,7 @@ public class ControllerActivity extends Activity implements PluginResultListener
         if (dialogFragment != null) dialogFragment.dismiss();
     }
 
-    private static class StateFragment extends Fragment {
+    public static class StateFragment extends Fragment {
 
         // These objects need to be retained across configuration changes
         PluginController pluginController;
