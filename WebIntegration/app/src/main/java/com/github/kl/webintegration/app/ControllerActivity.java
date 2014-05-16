@@ -7,7 +7,6 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,25 +19,20 @@ import com.github.kl.webintegration.app.controllers.PluginController;
 import com.github.kl.webintegration.app.controllers.SystemPluginController;
 import com.github.kl.webintegration.app.handlers.ResultHandler;
 import com.github.kl.webintegration.app.handlers.ResultHandler.HandlerCompletedListener;
-import com.google.common.base.Preconditions;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import static com.github.kl.webintegration.app.WebIntegrationApplication.LOG_TAG;
 
 public class ControllerActivity extends Activity
-        implements PluginResultListener, HandlerCompletedListener, Dialog.OnClickListener {
+        implements PluginResultListener, HandlerCompletedListener {
 
     private static final String TAG_STATE_FRAGMENT    = "state_fragment";
     private static final String TAG_ERROR_FRAGMENT    = "error_fragment";
@@ -229,7 +223,7 @@ public class ControllerActivity extends Activity
 
     private void onProgressDialogCancel() {
         dismissDialogFragment(TAG_PROGRESS_FRAGMENT);
-        handler.onUserCancel();
+        handler.onUserAbort();
         finish();
     }
 
@@ -237,11 +231,6 @@ public class ControllerActivity extends Activity
         FragmentManager fm = getFragmentManager();
         DialogFragment dialogFragment = (DialogFragment)fm.findFragmentByTag(dialogFragmentTag);
         if (dialogFragment != null) dialogFragment.dismiss();
-    }
-
-    @Override
-    public void onClick(DialogInterface dialogInterface, int i) {
-
     }
 
     public static class StateFragment extends Fragment {

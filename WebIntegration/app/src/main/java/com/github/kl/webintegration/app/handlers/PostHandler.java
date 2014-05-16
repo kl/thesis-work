@@ -1,12 +1,10 @@
 package com.github.kl.webintegration.app.handlers;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.github.kl.webintegration.app.Settings;
 
-import org.apache.http.client.HttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,7 +12,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
-import java.net.URL;
 
 import javax.inject.Inject;
 
@@ -64,7 +61,7 @@ public abstract class PostHandler extends ResultHandler {
     }
 
     @Override
-    public void onUserCancel() {
+    public void onUserAbort() {
         if (postThread == null) return;
         postThread.interrupt();
     }

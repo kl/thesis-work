@@ -76,7 +76,7 @@ public class HttpServerHandler extends ResultHandler {
     }
 
     @Override
-    public void onUserCancel() {}
+    public void onUserAbort() {}
 
     private String getPluginNotFoundJson() {
         return "{\"" + settings.getPluginNotFoundKey() + "\":" +

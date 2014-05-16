@@ -1,4 +1,12 @@
 
+function startPollingRemote() {
+    performPoll("/appdata", 500, handleGet);
+}
+
+function startPollingLocal() {
+    performPoll("http://localhost:9999", 500, handleGet);
+}
+
 function performPoll(url, delay, callback) {
 
     function poll() {
@@ -7,7 +15,7 @@ function performPoll(url, delay, callback) {
             url: url,
             success: function(result) {
                 performPoll.timeout = setTimeout(poll, delay);
-                callback(result);
+                callback(result, performPoll.timeout);
             },
             error: function() {
                 performPoll.timeout = setTimeout(poll, delay);
@@ -17,26 +25,18 @@ function performPoll(url, delay, callback) {
     poll();
 }
 
-function startPollingRemote() {
-    performPoll("/appdata", 1000, handleGet);
-}
-
-function startPollingLocal() {
-    performPoll("http://localhost:9999", 1000, handleGet);
-}
-
-function handleGet(json) {
+function handleGet(json, pollTimeout) {
     if (json.message === "plugin_not_found") {
-        clearTimeout(performPoll.timeout);
+        clearTimeout(pollTimeout);
         alert("Plugin not found")
     } else if (json.message === "user_cancel") {
-        clearTimeout(performPoll.timeout);
+        clearTimeout(pollTimeout);
         alert("User canceled")
     } else if (json.email != null) {
-        clearTimeout(performPoll.timeout);
+        clearTimeout(pollTimeout);
         $("#message_list").append("<p>" + "Email: " + json.email + "</p>");
     } else if (json.message != null) {
-        clearTimeout(performPoll.timeout);
+        clearTimeout(pollTimeout);
         $("#message_list").append("<p>" + json.message + "</p>");
     }
 }
@@ -57,12 +57,12 @@ function speedTest(url, pollMs, callback) {
 
     var startTime = new Date().getTime(); // unix time
 
-    performPoll(url, pollMs, function success(json) {
+    performPoll(url, pollMs, function success(json, pollTimeout) {
         if (json.message === "plugin_not_found") {
-            clearTimeout(performPoll.timeout);
+            clearTimeout(pollTimeout);
             alert("Plugin not found")
         } else if (json.message != null) {
-            clearTimeout(performPoll.timeout);
+            clearTimeout(pollTimeout);
             var timeTaken = (new Date().getTime()) - startTime;
             callback(timeTaken);
         }
