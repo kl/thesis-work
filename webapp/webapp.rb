@@ -41,7 +41,6 @@ end
 
 get "/appdata" do
   content_type :json
-  response.headers['Access-Control-Allow-Origin'] = '*'
 
   status 200
   read_and_clear_data
