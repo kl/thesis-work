@@ -51,6 +51,11 @@ get "/speedtest" do
   erb :speedtest
 end
 
+get "/presentation" do
+  clear_data
+  erb :presentation
+end
+
 get "/measure/:what/:times" do
   clear_data
   @times = params[:times]
@@ -139,6 +144,7 @@ __END__
       }
       table#speed_test {
       }
+
     </style>
   </head>
 
@@ -194,6 +200,26 @@ __END__
 <div id="main">
   <div id="links">
     <a href="#" onclick="speedMeasure('<%= @what %>', <%= @times %>, <%= @delay %>, counter)">Start measure</a>
+  </div>
+  <hr/>
+  <div id="message_list" />
+</div>
+
+@@ presentation
+<div id="main">
+  <style type="text/css" scoped>
+    div#links a {
+      font-size: 90;
+      text-decoration: none;
+      color: #9D47BA;
+    }
+    div#message_list {
+      font-size: 90;
+    }
+  </style>
+
+  <div id="links">
+    <a href="<%= BARCODE_SERVER %>" onclick="startPollingLocal()">Scan a Barcode</a>
   </div>
   <hr/>
   <div id="message_list" />
