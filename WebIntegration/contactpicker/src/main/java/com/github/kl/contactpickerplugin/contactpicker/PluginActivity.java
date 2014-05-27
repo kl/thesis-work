@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.view.Menu;
-import android.view.MenuItem;
 
 public class PluginActivity extends Activity {
 
@@ -45,6 +43,7 @@ public class PluginActivity extends Activity {
 
     private String queryEmailAddress(Uri data) {
         Cursor cursor = getContentResolver().query(data, null, null, null, null);
+        assert cursor != null;
         cursor.moveToFirst();
 
         int emailIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
